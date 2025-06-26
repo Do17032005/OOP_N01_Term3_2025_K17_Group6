@@ -1,34 +1,20 @@
 package com.example.servingwebcontent.database;
 
-
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
-
-import com.example.servingwebcontent.env.EnvReader;
-
-import java.sql.*;
 
 public class AivenConnection {
-    public void aivenConn() {
+    public static Connection getConnection() {
         Connection conn = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-     // Kết nối đúng thông tin Aiven
-            String url = EnvReader.get("url");
-            String user = EnvReader.get("user");
-            String password = EnvReader.get("password");
+            String url = "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED";
+            String user = "avnadmin";
+            String password = "AVNS_OY6UdTSUCEJY08Wic_V";
             conn = DriverManager.getConnection(url, user, password);
-            // Sử dụng biến conn để kiểm tra kết nối
-            if (conn != null && !conn.isClosed()) {
-                System.out.println("Kết nối thành công đến Aiven database");
-                conn.close();
-            }
         } catch (Exception e) {
-            System.out.println("Lỗi kết nối đến Aiven database");
             e.printStackTrace();
         }
+        return conn;
     }
 }

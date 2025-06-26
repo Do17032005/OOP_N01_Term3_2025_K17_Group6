@@ -11,9 +11,9 @@ public class MovieList {
     }
     // Sửa thông tin phim theo ID
 
-    public ArrayList<Movie> getEditMovieById(String name, int movieId) {
+    public ArrayList<Movie> getEditMovieById(String name, String movieId) {
         for (int i = 0; i < movies.size(); i++) {
-            if (Integer.parseInt(movies.get(i).getId()) == movieId) {
+            if (movies.get(i).getId().equals(movieId)) {
                 movies.get(i).setTitle(name);
                 break;
             }
@@ -43,9 +43,9 @@ public class MovieList {
         return null;
     }
 
-    public ArrayList<Movie> getDeleteMovie(int movieId) {
+    public ArrayList<Movie> getDeleteMovie(String movieId) {
         for (int i = 0; i < movies.size(); i++) {
-            if (Integer.parseInt(movies.get(i).getId()) == movieId) {
+            if (movies.get(i).getId().equals(movieId)) {
                 movies.remove(i);
                 break;
             }

@@ -1,13 +1,16 @@
 package com.example.servingwebcontent;
 import com.example.servingwebcontent.model.*;
 
+import java.util.ArrayList;
 import java.util.Scanner;
-
 
 public class MainMenu {
     private MovieList movieList = new MovieList();
     private CustomerList customerList = new CustomerList();
     private TicketList ticketList = new TicketList();
+    // Thêm các list giả lập cho showtime và seat để demo in danh sách vé
+    private ArrayList<Showtime> showtimeList = new ArrayList<>();
+    private ArrayList<Seat> seatList = new ArrayList<>();
     private Scanner sc = new Scanner(System.in);
 
     public void run() {
@@ -71,8 +74,7 @@ public class MainMenu {
                 movieList.printMovieList();
             } else if (c == 3) {
                 System.out.print("Nhập ID phim cần xoá: ");
-                String movieIdStr = sc.nextLine();
-                int movieId = Integer.parseInt(movieIdStr);
+                String movieId = sc.nextLine();
                 movieList.getDeleteMovie(movieId);
                 System.out.println("Đã xoá phim.");
             } else {
@@ -125,49 +127,28 @@ public class MainMenu {
         System.out.print("Chọn: ");
         int c = Integer.parseInt(sc.nextLine());
         if (c == 1) {
-               System.out.print("ID vé: ");
-                String id = sc.nextLine();
-
-                // Chọn phim cho vé
-                System.out.println("Danh sách phim:");
-                movieList.printMovieList();
-                System.out.print("Nhập ID phim: ");
-                String movieId = sc.nextLine();
-                Movie movie = movieList.findMovieById(movieId);
-                if (movie == null) {
-                    System.out.println("Không tìm thấy phim!");
-                    return;
-                }
-
-                System.out.print("Số ghế: ");
-                String seat = sc.nextLine();
-                System.out.print("Giá vé: ");
-                double price = Double.parseDouble(sc.nextLine());
-
-                Ticket ticket = new Ticket(id, movie, seat, price);
-                ticketList.addTicket(ticket);
-                System.out.println("Đã thêm vé.");
+            System.out.print("ID vé: ");
+            String id = sc.nextLine();
+            System.out.print("ID suất chiếu: ");
+            String showtimeId = sc.nextLine();
+            System.out.print("ID ghế: ");
+            String seatId = sc.nextLine();
+            System.out.print("ID khách hàng: ");
+            String customerId = sc.nextLine();
+            System.out.print("Giá vé: ");
+            double price = Double.parseDouble(sc.nextLine());
+            Ticket ticket = new Ticket(id, showtimeId, seatId, customerId, price);
+            ticketList.addTicket(ticket);
             System.out.println("Đã thêm vé.");
         } else if (c == 2) {
-            ticketList.printTicketList();
+            ticketList.printTicketList(showtimeList, movieList.movies, seatList, customerList.getList());
         } else if (c == 3) {
             System.out.print("Nhập ID vé cần xoá: ");
             String ticketId = sc.nextLine();
-            Ticket ticket = ticketList.findTicketById(ticketId);
-            if (ticket == null) {
-                System.out.println("Không tìm thấy vé với ID: " + ticketId);
-                return;
-            }
-            ticketList.updateTicketById(ticketId, null); // Xoá vé bằng cách
-            System.out.println("Xoá vé thành công.");
-            ticketList.getAllTickets().remove(ticket); // Xoá vé khỏi danh sách
-            ticketList.removeTicketById(ticketId); // Gọi phương thức xoá vé
-            ticketList.printTicketsByCustomerId(ticketId); // In danh sách vé sau khi
-
+            ticketList.removeTicketById(ticketId);
             System.out.println("Đã xoá vé.");
         } else {
             System.out.println("Lựa chọn không hợp lệ!");
         }
-
     }
 }

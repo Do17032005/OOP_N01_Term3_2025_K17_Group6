@@ -1,85 +1,79 @@
 package com.example.servingwebcontent;
 
-import com.example.servingwebcontent.model.*;
+import com.example.servingwebcontent.database.MovieDAO;
+import com.example.servingwebcontent.model.Movie;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 public class MovieController {
-    private List<Movie> movieList = new ArrayList<>();
+    private final MovieDAO movieDAO = new MovieDAO();
 
-    // Hiển thị danh sách phim
     @GetMapping("/movies")
-    public String listMovies(Model model) {
-        model.addAttribute("movies", movieList);
-        return "movie-list";
+    public String getAllMovies(Model model) {
+        List<Movie> movies = movieDAO.getAllMovies();
+        model.addAttribute("movies", movies);
+        return "movie-list"; // Tên file HTML trong templates
     }
 
-    // Hiển thị form thêm phim
     @GetMapping("/movies/add")
-    public String addMovieForm(Model model) {
+    public String showAddForm(Model model) {
         model.addAttribute("movie", new Movie());
         return "add-movie";
     }
 
-    // Xử lý thêm phim
     @PostMapping("/movies/add")
-    public String addMovie(@ModelAttribute Movie movie, Model model) {
+    public String addMovie(@ModelAttribute Movie movie, org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        if (movie.getId() == null || movie.getId().trim().isEmpty()) {
+            movie.setId(UUID.randomUUID().toString());
+        }
+        movieDAO.insertMovie(movie);
+        redirectAttributes.addFlashAttribute("message", "Đã thêm phim mới. Hãy thêm suất chiếu cho phim này!");
+        return "redirect:/showtimes/add?movieId=" + movie.getId();
+    }
+
+    @GetMapping("/movies/edit/{id}")
+    public String showEditForm(@PathVariable String id, Model model, RedirectAttributes redirectAttributes) {
+        List<Movie> movies = movieDAO.getAllMovies();
+        Movie movie = movies.stream().filter(m -> m.getId().equals(id)).findFirst().orElse(null);
+        if (movie == null) {
+            redirectAttributes.addFlashAttribute("error", "Không tìm thấy phim với ID này. Có thể phim đã bị xóa hoặc ID không hợp lệ.");
+            return "redirect:/movies";
+        }
+        model.addAttribute("movie", movie);
+        return "edit-movie";
+    }
+
+    @PostMapping("/movies/edit")
+    public String editMovie(@ModelAttribute Movie movie, RedirectAttributes redirectAttributes) {
         try {
-            movieList.add(movie);
-            model.addAttribute("message", "Đã thêm phim: " + movie.getTitle());
+            movieDAO.updateMovie(movie);
+            redirectAttributes.addFlashAttribute("message", "Cập nhật phim thành công!");
         } catch (Exception e) {
-            model.addAttribute("message", "Lỗi: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Cập nhật phim thất bại!");
         }
-        model.addAttribute("movie", new Movie());
-        return "add-movie";
+        return "redirect:/movies";
     }
 
-    // Hiển thị form sửa phim
-    @GetMapping("/movies/edit/{id:.+}")
-    public String editMovieForm(@PathVariable("id") String id, Model model) {
-        Movie movieToEdit = null;
-        for (Movie m : movieList) {
-            if (m.getId().equals(id)) {
-                movieToEdit = m;
-                break;
-            }
+    @GetMapping("/movies/delete/{id}")
+    public String deleteMovie(@PathVariable String id, RedirectAttributes redirectAttributes) {
+        try {
+            movieDAO.deleteMovie(id);
+            redirectAttributes.addFlashAttribute("message", "Xóa phim thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Xóa phim thất bại!");
         }
-        if (movieToEdit != null) {
-            model.addAttribute("movie", movieToEdit);
-            return "edit-movie";
-        } else {
-            model.addAttribute("message", "Không tìm thấy phim để sửa.");
-            model.addAttribute("movies", movieList);
-            return "movie-list";
-        }
+        return "redirect:/movies";
     }
 
-    // Xử lý cập nhật phim
-    @PostMapping("/movies/edit/{id}")
-    public String editMovie(@PathVariable String id, @ModelAttribute Movie movie, Model model) {
-        for (int i = 0; i < movieList.size(); i++) {
-            if (movieList.get(i).getId().equals(id)) {
-                movieList.set(i, movie);
-                model.addAttribute("message", "Đã cập nhật phim thành công!");
-                break;
-            }
-        }
-        model.addAttribute("movies", movieList);
-        return "movie-list";
+    @GetMapping("/movies/edit")
+    public String redirectEditNoId(org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("error", "Bạn phải chọn phim để sửa!");
+        return "redirect:/movies";
     }
-
-    // Xóa phim
-    @GetMapping("/movies/delete/{name}")
-    public String deleteMovie(@PathVariable String name, Model model) {
-        movieList.removeIf(m -> m.getName().equals(name));
-        model.addAttribute("movies", movieList);
-        model.addAttribute("message", "Đã xóa phim thành công!");
-        return "movie-list";
-    }
-
 }

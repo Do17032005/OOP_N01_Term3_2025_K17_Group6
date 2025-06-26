@@ -71,3 +71,4 @@
 
 5. UI vé sắp chiếu
 <img src="https://github.com/Rumnn/resource/blob/main/upcoming.PNG">
+

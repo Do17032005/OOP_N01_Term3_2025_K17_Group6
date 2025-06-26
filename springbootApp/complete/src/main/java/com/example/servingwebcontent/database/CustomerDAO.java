@@ -1,0 +1,112 @@
+package com.example.servingwebcontent.database;
+
+import com.example.servingwebcontent.model.Customer;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class CustomerDAO {
+    public List<Customer> getAllCustomers() {
+        List<Customer> customers = new ArrayList<>();
+        Connection conn = null;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(
+                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
+                "avnadmin",
+                "AVNS_OY6UdTSUCEJY08Wic_V"
+            );
+            String sql = "SELECT * FROM Customer";
+            try (Statement stmt = conn.createStatement();
+                 ResultSet rs = stmt.executeQuery(sql)) {
+                while (rs.next()) {
+                    Customer c = new Customer(
+                        rs.getString("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("phoneNumber")
+                    );
+                    customers.add(c);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
+        }
+        return customers;
+    }
+
+    public void insertCustomer(Customer c) {
+        Connection conn = null;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(
+                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
+                "avnadmin",
+                "AVNS_OY6UdTSUCEJY08Wic_V"
+            );
+            String sql = "INSERT INTO Customer (id, name, email, phoneNumber) VALUES (?, ?, ?, ?)";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, c.getId());
+                ps.setString(2, c.getName());
+                ps.setString(3, c.getEmail());
+                ps.setString(4, c.getPhoneNumber());
+                ps.executeUpdate();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.print("loi khi them khach hang");
+        } finally {
+            if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
+        }
+    }
+
+    public void updateCustomer(Customer c) {
+        Connection conn = null;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(
+                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
+                "avnadmin",
+                "AVNS_OY6UdTSUCEJY08Wic_V"
+            );
+            String sql = "UPDATE Customer SET name=?, email=?, phoneNumber=? WHERE id=?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, c.getName());
+                ps.setString(2, c.getEmail());
+                ps.setString(3, c.getPhoneNumber());
+                ps.setString(4, c.getId());
+                ps.executeUpdate();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.print("loi khi cap nhat khach hang");
+        } finally {
+            if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
+        }
+    }
+
+    public void deleteCustomer(String id) {
+        Connection conn = null;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection(
+                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
+                "avnadmin",
+                "AVNS_OY6UdTSUCEJY08Wic_V"
+            );
+            String sql = "DELETE FROM Customer WHERE id=?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, id);
+                ps.executeUpdate();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.print("loi khi xoa khach hang");
+        } finally {
+            if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
+        }
+    }
+} 
