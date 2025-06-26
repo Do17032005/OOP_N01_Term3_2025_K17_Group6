@@ -1,15 +1,23 @@
 package main;
 
-// Import cụ thể các class cần dùng
 import test.TestSequence;
-import test.TestBookingManager;
+import test.*;
 
 public class App {
     public static void main(String[] args) {
-        System.out.println("Chương trình quản lý rạp chiếu phim đã được khởi động.");
+        // System.out.println("Chương trình quản lý rạp chiếu phim đã được khởi động.");
+
+        // MainMenu menu = new MainMenu();
+        // menu.run();
+
+
+
+        //  TestSequence.test();
+
+        TestBookingManager.test(args);
         
-        // Uncomment một trong các dòng sau để chạy:
-        // TestSequence.test();
-        // TestBookingManager.test(args);
+
+
+
     }
 }

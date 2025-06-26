@@ -1,19 +1,7 @@
 package com.example.servingwebcontent.model;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "Customer")
 public class Customer extends ObjectGeneral {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long dbId;
-    
-    @Column(name = "email")
     private String email; // Địa chỉ email
-    
-    @Column(name = "phone_number")
     private String phoneNumber; // Số điện thoại
     
     public Customer() {
@@ -27,14 +15,6 @@ public class Customer extends ObjectGeneral {
         super(id, name);
         this.email = email;
         this.phoneNumber = phoneNumber;
-    }
-
-    public Long getDbId() {
-        return dbId;
-    }
-    
-    public void setDbId(Long dbId) {
-        this.dbId = dbId;
     }
 
     // Getter và Setter

@@ -1,14 +1,7 @@
 package com.example.servingwebcontent.model;
 
-import jakarta.persistence.*;
-
-@MappedSuperclass
 public class ObjectGeneral {
-    
-    @Column(name = "id")
     protected String id;
-    
-    @Column(name = "name")
     protected String name;
 
     public ObjectGeneral() {

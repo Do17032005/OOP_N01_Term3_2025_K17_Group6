@@ -38,17 +38,17 @@
 + thêm sửa xóa khách hàng.
 + hiển thị thông tin khách hàng mua vé.
 
-- Chứa năng thanh toán tự động.(chưa có)
-- Chức năng in vé tự dộng.(chưa có)
+- Chứa năng thanh toán tự động.
+- Chức năng in vé tự dộng.
 
 
 
 
 ## Link project repo: 
-[GitHub Repo](https://github.com/Do17032005/OOP_N01_Term3_2025_K17_Group6)
+[GitHub Repo](https://github.com/Rumnn/OOP_N01_Term3_2025_K17_Group6)
 
 ## Link README:
-[README.md](https://github.com/Do17032005/OOP_N01_Term3_2025_K17_Group6/edit/Main/README.md)
+[README.md](https://github.com/Rumnn/OOP_N01_Term3_2025_K17_Group6/edit/main/README.md)
 
 
 
@@ -71,3 +71,4 @@
 
 5. UI vé sắp chiếu
 <img src="https://github.com/Rumnn/resource/blob/main/upcoming.PNG">
+
