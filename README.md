@@ -1,74 +1,112 @@
-## Project nhóm 6:
+# Cinema Ticket Booking - Nhóm 6
 
-## Thành viên trong  nhóm
-- Hoàng văn Độ 23010581 
-- Nguyễn Tiến Doanh 23010472 
-- Dương Thiện Hùng 23010601
+## Thành viên nhóm
+- Hoàng Văn Độ - 23010581  
+- Nguyễn Tiến Doanh - 23010472  
+- Dương Thiện Hùng - 23010601  
+- Lê Thư Nguyễn
 
-- lethunguyen
+---
 
-## Mô tả đối tượng
-1. ""Movie"" Quản lý thông tin của phim
--*Thuộc tính* : title, showTime, duration, genre, age
--*Phương thức* :display
-2. ""Customer"" Người mua vé
--*Thuộc tính* : id, name, phone, email
--*Phương up* :displayInfonfo
-3. ""ticket"" Thông tin vé đá đặt
--*Thuộc tính* : id, movieId, customerId, ticketPrice, seatNumber, status
--*Phương thức* :displayInfo
+## Mô tả dự án
 
+**Cinema Ticket Booking** là hệ thống bán vé xem phim trực tuyến, xây dựng bằng **Java Spring Boot**. Ứng dụng hỗ trợ quản lý phim, phòng chiếu, vé, khách hàng, và các chức năng đặt vé, thanh toán, in vé.
 
-## Xây dựng ứng dụng: CinemaTicketBooking (Hệ thống bán vé xem phim)
+---
 
-- Giao diện <b>Java Spring Boot</b>.
-- Chức năng quản lí:
-1. Quản lí phim.
-2. Quản lí vé và khách hàng mua vé.
-3. Các chức năng khác v.v....
+## Chức năng chính
 
-## Cụ thể:
-- Quản lí phòng xem phim:
-+ thêm sửa xóa phim.
-+ hiển thị thông tin phim.
-- Quản lí vé:
-+ thêm sửa xóa vé.
-+ hiển thị thông tin vé.
-- Quản lí khách hàng:
-+ thêm sửa xóa khách hàng.
-+ hiển thị thông tin khách hàng mua vé.
+- **Quản lý phim:**  
+  - Thêm, sửa, xóa phim  
+  - Hiển thị thông tin phim
 
-- Chứa năng thanh toán tự động.
-- Chức năng in vé tự dộng.
+- **Quản lý phòng chiếu:**  
+  - Thêm, sửa, xóa phòng  
+  - Hiển thị danh sách phòng
 
+- **Quản lý vé:**  
+  - Thêm, sửa, xóa vé  
+  - Hiển thị thông tin vé
 
+- **Quản lý khách hàng:**  
+  - Thêm, sửa, xóa khách hàng  
+  - Hiển thị thông tin khách hàng mua vé
 
+- **Đặt vé, thanh toán, in vé tự động**
 
-## Link project repo: 
-[GitHub Repo](https://github.com/Rumnn/OOP_N01_Term3_2025_K17_Group6)
+---
 
-## Link README:
-[README.md](https://github.com/Rumnn/OOP_N01_Term3_2025_K17_Group6/edit/main/README.md)
+## Mô hình đối tượng
 
+1. **Movie** (Phim)
+   - *Thuộc tính:* title, showTime, duration, genre, age
+   - *Phương thức:* display
 
+2. **Customer** (Khách hàng)
+   - *Thuộc tính:* id, name, phone, email
+   - *Phương thức:* displayInfo
 
-1. Class Diagram
- 
-<img src="nd2.jpg"></img>
+3. **Ticket** (Vé)
+   - *Thuộc tính:* id, movieId, customerId, ticketPrice, seatNumber, status
+   - *Phương thức:* displayInfo
 
+4. **Room** (Phòng chiếu)
+   - *Thuộc tính:* id, name, seatCount, type
+   - *Phương thức:* displayInfo
 
+---
 
-2. Activity Diagram
+## Công nghệ sử dụng
 
-<img src="https://github.com/Rumnn/resource/blob/main/activitydiagram.jpg">
+- Java 17
+- Spring Boot 3.x
+- Thymeleaf
+- MySQL
+- Maven
 
-3. Lưu đồ thuật toán
+---
 
-<img src="https://github.com/Rumnn/resource/blob/main/LuuDoThuatToan.jpg">
+## Hướng dẫn chạy dự án
 
-4. UI thêm phim
-<img src="https://github.com/Do17032005/IMG/blob/main/UI%20nh%E1%BA%ADp%20phim.png">
+1. Clone repo:
+   ```
+   git clone https://github.com/Rumnn/OOP_N01_Term3_2025_K17_Group6
+   ```
+2. Cài đặt MySQL, tạo database và cấu hình kết nối trong `application.properties`.
+3. Build và chạy ứng dụng:
+   ```
+   cd springbootApp/complete
+   mvn spring-boot:run
+   ```
+4. Truy cập ứng dụng tại:  
+   ```
+   http://localhost:8080/
+   ```
+   (hoặc domain Codespaces nếu dùng cloud IDE)
 
-5. UI vé sắp chiếu
-<img src="https://github.com/Rumnn/resource/blob/main/upcoming.PNG">
+---
+
+## Hình ảnh & sơ đồ
+
+### 1. Class Diagram
+![Class Diagram](nd2.jpg)
+
+### 2. Activity Diagram
+![Activity Diagram](https://github.com/Rumnn/resource/blob/main/activitydiagram.jpg)
+
+### 3. Lưu đồ thuật toán
+![Lưu đồ thuật toán](https://github.com/Rumnn/resource/blob/main/LuuDoThuatToan.jpg)
+
+### 4. Giao diện thêm phim
+![UI thêm phim](https://github.com/Do17032005/IMG/blob/main/UI%20nh%E1%BA%ADp%20phim.png)
+
+### 5. UI vé sắp chiếu
+![UI vé sắp chiếu](https://github.com/Rumnn/resource/blob/main/upcoming.PNG)
+
+---
+
+## Liên kết
+
+- [GitHub Repo](https://github.com/Do17032005/OOP_N01_Term3_2025_K17_Group6)
+- [README.md trên GitHub](https://github.com/Do17032005/OOP_N01_Term3_2025_K17_Group6/edit/main/README.md)
 
