@@ -4,7 +4,7 @@
 - Hoàng Văn Độ - 23010581  
 - Nguyễn Tiến Doanh - 23010472  
 - Dương Thiện Hùng - 23010601  
-- Lê Thư Nguyễn
+- Nguyen Le Thu
 
 ---
 
