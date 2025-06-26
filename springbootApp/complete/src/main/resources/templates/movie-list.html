@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Danh sách phim</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <style>
+        body { background: #f8fafc; }
+        .main-title { color: #0d6efd; font-weight: 700; margin-bottom: 32px; }
+        .table thead { background: #0d6efd; color: #fff; }
+        .table-hover tbody tr:hover { background: #e7f1ff; }
+        .btn-add { background: #0d6efd; color: #fff; }
+        .btn-add:hover { background: #0b5ed7; color: #fff; }
+    </style>
+</head>
+<body>
+<div th:replace="fragments/navbar.html :: nav"></div>
+<div class="container py-5">
+    <div th:if="${message}" class="alert alert-success text-center" th:text="${message}"></div>
+    <div th:if="${error}" class="alert alert-danger text-center" th:text="${error}"></div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="main-title"><i class="bi bi-film"></i> Danh sách phim</h1>
+        <a href="/movies/add" class="btn btn-add"><i class="bi bi-plus-circle"></i> Thêm phim mới</a>
+    </div>
+    <div class="table-responsive rounded shadow-sm">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Tên phim</th>
+                    <th scope="col">Thể loại</th>
+                    <th scope="col">Thời lượng</th>
+                    <th scope="col">Mô tả</th>
+                    <th scope="col">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="movie, iterStat : ${movies}">
+                    <th th:text="${iterStat.count}"></th>
+                    <td th:text="${movie.name}"></td>
+                    <td th:text="${movie.genre}"></td>
+                    <td th:text="${movie.duration} + ' phút'"></td>
+                    <td th:text="${movie.description}"></td>
+                    <td>
+                        <a th:href="@{'/movies/edit/' + ${movie.id}}" class="btn btn-sm btn-warning me-1"><i class="bi bi-pencil-square"></i></a>
+                        <a th:href="@{'/movies/delete/' + ${movie.id}}" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa phim này?');"><i class="bi bi-trash"></i></a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(movies)}">
+                    <td colspan="6" class="text-center text-muted">Chưa có phim nào.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
