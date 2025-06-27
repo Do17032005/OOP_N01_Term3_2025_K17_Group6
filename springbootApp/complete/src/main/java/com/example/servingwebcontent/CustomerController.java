@@ -13,6 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 public class CustomerController {
@@ -82,6 +83,36 @@ public class CustomerController {
         session.invalidate();
         return "redirect:/login";
     }
+
+    @GetMapping("/register")
+    public String showRegisterForm(Model model) {
+        model.addAttribute("customer", new Customer());
+        return "sign-up";
+    }
+
+    @PostMapping("/register")
+    public String processRegister(@ModelAttribute("customer") Customer customer, Model model) {
+        // Kiểm tra trùng email/số điện thoại
+        for (Customer c : customerDAO.getAllCustomers()) {
+            if (c.getEmail().equals(customer.getEmail())) {
+                model.addAttribute("message", "Email đã được sử dụng!");
+                return "sign-up";
+            }
+            if (c.getPhoneNumber().equals(customer.getPhoneNumber())) {
+                model.addAttribute("message", "Số điện thoại đã được sử dụng!");
+                return "sign-up";
+            }
+        }
+        // Sinh id tự động nếu chưa có
+        if (customer.getId() == null || customer.getId().isEmpty()) {
+            customer.setId(UUID.randomUUID().toString());
+        }
+        // Lưu customer vào DB
+        customerDAO.insertCustomer(customer);
+        model.addAttribute("message", "Đăng ký thành công!");
+        model.addAttribute("customer", new Customer());
+        return "sign-up";
+    }
 }
 
 @Configuration
@@ -89,7 +120,9 @@ class LoginInterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LoginInterceptor())
-            .excludePathPatterns("/login", "/logout", "/static/**", "/css/**", "/js/**", "/images/**");
+            .excludePathPatterns(
+                "/login", "/logout", "/register", "/static/**", "/css/**", "/js/**", "/images/**"
+            );
     }
 }
 
