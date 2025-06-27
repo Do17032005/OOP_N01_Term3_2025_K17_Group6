@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Bookings - Cinema Booking</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        }
+        .booking-card {
+            transition: transform 0.3s ease;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .booking-card:hover {
+            transform: translateY(-5px);
+        }
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 0.5rem 1rem;
+        }
+        .status-confirmed {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+        .status-pending {
+            background: linear-gradient(135deg, #ffc107, #fd7e14);
+            color: white;
+        }
+        .status-cancelled {
+            background: linear-gradient(135deg, #dc3545, #e83e8c);
+            color: white;
+        }
+        .status-completed {
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-film"></i> Cinema Booking
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/movies">Movies</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/showtimes">Showtimes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/booking">Book Tickets</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/my-bookings">My Bookings</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register">Register</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <div class="bg-primary text-white py-4">
+        <div class="container">
+            <h1 class="mb-3">My Bookings</h1>
+            <p class="lead">View and manage your movie reservations</p>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="btn-group" role="group">
+                    <input type="radio" class="btn-check" name="statusFilter" id="all" value="all" checked>
+                    <label class="btn btn-outline-primary" for="all">All Bookings</label>
+                    
+                    <input type="radio" class="btn-check" name="statusFilter" id="confirmed" value="confirmed">
+                    <label class="btn btn-outline-primary" for="confirmed">Confirmed</label>
+                    
+                    <input type="radio" class="btn-check" name="statusFilter" id="pending" value="pending">
+                    <label class="btn btn-outline-primary" for="pending">Pending</label>
+                    
+                    <input type="radio" class="btn-check" name="statusFilter" id="completed" value="completed">
+                    <label class="btn btn-outline-primary" for="completed">Completed</label>
+                    
+                    <input type="radio" class="btn-check" name="statusFilter" id="cancelled" value="cancelled">
+                    <label class="btn btn-outline-primary" for="cancelled">Cancelled</label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search bookings..." id="searchInput">
+                    <button class="btn btn-primary" type="button">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bookings List -->
+    <div class="container mt-4">
+        <div class="row" id="bookingsContainer">
+            <!-- Booking cards will be loaded here -->
+        </div>
+        
+        <!-- No bookings found -->
+        <div class="text-center py-5" id="noBookings" style="display: none;">
+            <i class="bi bi-ticket-perforated display-1 text-muted"></i>
+            <h3 class="mt-3">No bookings found</h3>
+            <p class="text-muted">You haven't made any bookings yet</p>
+            <a href="/movies" class="btn btn-primary">
+                <i class="bi bi-film"></i> Browse Movies
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Cinema Booking System</h5>
+                    <p>Your premier destination for movie tickets</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; 2024 Cinema Booking. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sample bookings data
+        const bookingsData = [
+            {
+                id: 1,
+                movieTitle: "The Avengers",
+                movieGenre: "Action",
+                showtime: "2024-01-15 14:00",
+                room: "Room A",
+                seats: ["A1", "A2"],
+                totalPrice: 25.98,
+                status: "confirmed",
+                bookingDate: "2024-01-10"
+            },
+            {
+                id: 2,
+                movieTitle: "Titanic",
+                movieGenre: "Romance",
+                showtime: "2024-01-20 20:00",
+                room: "Room B",
+                seats: ["C5"],
+                totalPrice: 11.99,
+                status: "pending",
+                bookingDate: "2024-01-12"
+            },
+            {
+                id: 3,
+                movieTitle: "The Lion King",
+                movieGenre: "Animation",
+                showtime: "2024-01-08 10:00",
+                room: "Room C",
+                seats: ["B3", "B4", "B5"],
+                totalPrice: 29.97,
+                status: "completed",
+                bookingDate: "2024-01-05"
+            },
+            {
+                id: 4,
+                movieTitle: "Jurassic Park",
+                movieGenre: "Adventure",
+                showtime: "2024-01-25 15:30",
+                room: "Room A",
+                seats: ["D7"],
+                totalPrice: 12.99,
+                status: "cancelled",
+                bookingDate: "2024-01-14"
+            }
+        ];
+
+        function filterBookings() {
+            const selectedStatus = document.querySelector('input[name="statusFilter"]:checked').value;
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+
+            let filteredBookings = bookingsData.filter(booking => {
+                // Filter by status
+                if (selectedStatus !== 'all' && booking.status !== selectedStatus) {
+                    return false;
+                }
+
+                // Filter by search term
+                if (searchTerm && !booking.movieTitle.toLowerCase().includes(searchTerm)) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            displayBookings(filteredBookings);
+        }
+
+        function displayBookings(bookings) {
+            const container = document.getElementById('bookingsContainer');
+            const noBookings = document.getElementById('noBookings');
+
+            if (bookings.length === 0) {
+                container.innerHTML = '';
+                noBookings.style.display = 'block';
+                return;
+            }
+
+            noBookings.style.display = 'none';
+            container.innerHTML = bookings.map(booking => `
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card booking-card h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h5 class="card-title">${booking.movieTitle}</h5>
+                                <span class="badge status-badge status-${booking.status}">
+                                    ${booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                                </span>
+                            </div>
+                            
+                            <p class="text-muted mb-2">${booking.movieGenre}</p>
+                            
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar-event"></i> Showtime
+                                    </small>
+                                    <small>${formatDateTime(booking.showtime)}</small>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <small class="text-muted">
+                                        <i class="bi bi-geo-alt"></i> Room
+                                    </small>
+                                    <small>${booking.room}</small>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <small class="text-muted">
+                                        <i class="bi bi-grid-3x3-gap"></i> Seats
+                                    </small>
+                                    <small>${booking.seats.join(', ')}</small>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar"></i> Booked on
+                                    </small>
+                                    <small>${formatDate(booking.bookingDate)}</small>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <strong class="text-primary">$${booking.totalPrice.toFixed(2)}</strong>
+                                <div class="btn-group btn-group-sm">
+                                    ${getActionButtons(booking)}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function formatDateTime(dateTimeStr) {
+            const date = new Date(dateTimeStr);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString();
+        }
+
+        function getActionButtons(booking) {
+            let buttons = '';
+            
+            if (booking.status === 'confirmed') {
+                buttons += `
+                    <button class="btn btn-outline-success btn-sm" onclick="viewTicket(${booking.id})">
+                        <i class="bi bi-ticket-perforated"></i> View
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" onclick="cancelBooking(${booking.id})">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </button>
+                `;
+            } else if (booking.status === 'pending') {
+                buttons += `
+                    <button class="btn btn-outline-primary btn-sm" onclick="payBooking(${booking.id})">
+                        <i class="bi bi-credit-card"></i> Pay
+                    </button>
+                    <button class="btn btn-outline-danger btn-sm" onclick="cancelBooking(${booking.id})">
+                        <i class="bi bi-x-circle"></i> Cancel
+                    </button>
+                `;
+            } else if (booking.status === 'completed') {
+                buttons += `
+                    <button class="btn btn-outline-info btn-sm" onclick="viewTicket(${booking.id})">
+                        <i class="bi bi-ticket-perforated"></i> View
+                    </button>
+                    <button class="btn btn-outline-primary btn-sm" onclick="bookAgain(${booking.id})">
+                        <i class="bi bi-arrow-clockwise"></i> Book Again
+                    </button>
+                `;
+            } else if (booking.status === 'cancelled') {
+                buttons += `
+                    <button class="btn btn-outline-primary btn-sm" onclick="bookAgain(${booking.id})">
+                        <i class="bi bi-arrow-clockwise"></i> Book Again
+                    </button>
+                `;
+            }
+            
+            return buttons;
+        }
+
+        // Action functions
+        function viewTicket(bookingId) {
+            alert(`Viewing ticket for booking ${bookingId}`);
+        }
+
+        function cancelBooking(bookingId) {
+            if (confirm('Are you sure you want to cancel this booking?')) {
+                alert(`Booking ${bookingId} cancelled`);
+                filterBookings();
+            }
+        }
+
+        function payBooking(bookingId) {
+            alert(`Redirecting to payment for booking ${bookingId}`);
+        }
+
+        function bookAgain(bookingId) {
+            alert(`Redirecting to booking page for booking ${bookingId}`);
+        }
+
+        // Event listeners
+        document.querySelectorAll('input[name="statusFilter"]').forEach(radio => {
+            radio.addEventListener('change', filterBookings);
+        });
+
+        document.getElementById('searchInput').addEventListener('input', filterBookings);
+
+        // Initialize
+        filterBookings();
+    </script>
+</body>
+</html> 

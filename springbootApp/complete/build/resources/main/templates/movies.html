@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Movies - Cinema Booking</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .movie-card {
+            transition: transform 0.3s ease;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .movie-card:hover {
+            transform: translateY(-5px);
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        }
+        .genre-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-film"></i> Cinema Booking
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/movies">Movies</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/showtimes">Showtimes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/booking">Book Tickets</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/my-bookings">My Bookings</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register">Register</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <div class="bg-primary text-white py-4">
+        <div class="container">
+            <h1 class="mb-3">Movies</h1>
+            <p class="lead">Discover the latest movies and book your tickets</p>
+        </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8">
+                <form method="get" action="/movies" class="d-flex">
+                    <input type="text" name="keyword" th:value="${keyword}" class="form-control me-2" placeholder="Search movies...">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+            </div>
+            <div class="col-md-4">
+                <select name="genre" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Genres</option>
+                    <option value="Action" th:selected="${selectedFilter == 'Action'}">Action</option>
+                    <option value="Comedy" th:selected="${selectedFilter == 'Comedy'}">Comedy</option>
+                    <option value="Drama" th:selected="${selectedFilter == 'Drama'}">Drama</option>
+                    <option value="Horror" th:selected="${selectedFilter == 'Horror'}">Horror</option>
+                    <option value="Romance" th:selected="${selectedFilter == 'Romance'}">Romance</option>
+                    <option value="Sci-Fi" th:selected="${selectedFilter == 'Sci-Fi'}">Sci-Fi</option>
+                    <option value="Thriller" th:selected="${selectedFilter == 'Thriller'}">Thriller</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Movies Grid -->
+    <div class="container mt-4">
+        <div class="row" th:if="${items != null and !items.empty}">
+            <div class="col-md-4 mb-4" th:each="movie : ${items}">
+                <div class="card movie-card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${movie.title}">Movie Title</h5>
+                        <span class="badge genre-badge mb-2" th:text="${movie.genre}">Genre</span>
+                        <p class="card-text" th:text="${movie.description}">Movie description...</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="bi bi-clock"></i>
+                                <span th:text="${movie.duration + ' min'}">120 min</span>
+                            </small>
+                            <small class="text-muted">
+                                <i class="bi bi-star"></i>
+                                <span th:text="${movie.ageRating + '+'}">13+</span>
+                            </small>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="h5 mb-0" th:text="${'$' + movie.price}">$12.99</span>
+                            <a th:href="@{'/booking?movieId=' + ${movie.id}}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-ticket-perforated"></i> Book Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- No movies found -->
+        <div class="text-center py-5" th:if="${items == null or items.empty}">
+            <i class="bi bi-film display-1 text-muted"></i>
+            <h3 class="mt-3">No movies found</h3>
+            <p class="text-muted">Try adjusting your search criteria</p>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="container mt-4" th:if="${totalPages > 1}">
+        <nav aria-label="Movies pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                    <a class="page-link" th:href="@{/movies(page=${currentPage - 1}, keyword=${keyword}, genre=${selectedFilter})}">Previous</a>
+                </li>
+                <li class="page-item" th:each="pageNum : ${#numbers.sequence(0, totalPages - 1)}" 
+                    th:classappend="${pageNum == currentPage} ? 'active'">
+                    <a class="page-link" th:href="@{/movies(page=${pageNum}, keyword=${keyword}, genre=${selectedFilter})}" 
+                       th:text="${pageNum + 1}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                    <a class="page-link" th:href="@{/movies(page=${currentPage + 1}, keyword=${keyword}, genre=${selectedFilter})}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Cinema Booking System</h5>
+                    <p>Your premier destination for movie tickets</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; 2024 Cinema Booking. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

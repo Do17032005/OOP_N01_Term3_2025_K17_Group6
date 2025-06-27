@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title} + ' - Cinema Booking'">Form - Cinema Booking</title>
+</head>
+<body>
+    <div th:fragment="content">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i th:attr="class=${icon}"></i> <span th:text="${title}">Form</span></h2>
+            <a th:href="@{${listUrl}}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
+        </div>
+
+        <!-- Form Card -->
+        <div class="card">
+            <div class="card-body">
+                <form th:action="@{${actionUrl}}" th:object="${form}" method="post" class="needs-validation" novalidate>
+                    <div class="row">
+                        <!-- Dynamic Form Fields -->
+                        <div th:each="field : ${fields}" th:class="'col-md-' + ${field.width ?: 6} + ' mb-3'">
+                            <label th:for="${field.name}" class="form-label" th:text="${field.label}">Field Label</label>
+                            
+                            <!-- Text Input -->
+                            <input th:if="${field.type == 'text'}" 
+                                   th:type="text" 
+                                   th:field="*{${field.name}}" 
+                                   th:id="${field.name}"
+                                   class="form-control" 
+                                   th:placeholder="${field.placeholder}"
+                                   th:required="${field.required}" />
+                            
+                            <!-- Email Input -->
+                            <input th:if="${field.type == 'email'}" 
+                                   type="email" 
+                                   th:field="*{${field.name}}" 
+                                   th:id="${field.name}"
+                                   class="form-control" 
+                                   th:placeholder="${field.placeholder}"
+                                   th:required="${field.required}" />
+                            
+                            <!-- Password Input -->
+                            <input th:if="${field.type == 'password'}" 
+                                   type="password" 
+                                   th:field="*{${field.name}}" 
+                                   th:id="${field.name}"
+                                   class="form-control" 
+                                   th:placeholder="${field.placeholder}"
+                                   th:required="${field.required}" />
+                            
+                            <!-- Number Input -->
+                            <input th:if="${field.type == 'number'}" 
+                                   type="number" 
+                                   th:field="*{${field.name}}" 
+                                   th:id="${field.name}"
+                                   class="form-control" 
+                                   th:placeholder="${field.placeholder}"
+                                   th:required="${field.required}"
+                                   th:min="${field.min}"
+                                   th:max="${field.max}"
+                                   th:step="${field.step}" />
+                            
+                            <!-- Date Input -->
+                            <input th:if="${field.type == 'date'}" 
+                                   type="date" 
+                                   th:field="*{${field.name}}" 
+                                   th:id="${field.name}"
+                                   class="form-control" 
+                                   th:required="${field.required}" />
+                            
+                            <!-- Time Input -->
+                            <input th:if="${field.type == 'time'}" 
+                                   type="time" 
+                                   th:field="*{${field.name}}" 
+                                   th:id="${field.name}"
+                                   class="form-control" 
+                                   th:required="${field.required}" />
+                            
+                            <!-- Textarea -->
+                            <textarea th:if="${field.type == 'textarea'}" 
+                                      th:field="*{${field.name}}" 
+                                      th:id="${field.name}"
+                                      class="form-control" 
+                                      th:placeholder="${field.placeholder}"
+                                      th:required="${field.required}"
+                                      th:rows="${field.rows ?: 3}"></textarea>
+                            
+                            <!-- Select Dropdown -->
+                            <select th:if="${field.type == 'select'}" 
+                                    th:field="*{${field.name}}" 
+                                    th:id="${field.name}"
+                                    class="form-select" 
+                                    th:required="${field.required}">
+                                <option value="">Select...</option>
+                                <option th:each="option : ${field.options}" 
+                                        th:value="${option.value}" 
+                                        th:text="${option.label}">Option</option>
+                            </select>
+                            
+                            <!-- Checkbox -->
+                            <div th:if="${field.type == 'checkbox'}" class="form-check">
+                                <input th:field="*{${field.name}}" 
+                                       th:id="${field.name}"
+                                       class="form-check-input" 
+                                       type="checkbox" />
+                                <label th:for="${field.name}" class="form-check-label" th:text="${field.label}">Checkbox</label>
+                            </div>
+                            
+                            <!-- Radio Buttons -->
+                            <div th:if="${field.type == 'radio'}" class="mt-2">
+                                <div th:each="option : ${field.options}" class="form-check">
+                                    <input th:field="*{${field.name}}" 
+                                           th:value="${option.value}"
+                                           class="form-check-input" 
+                                           type="radio" 
+                                           th:id="${field.name + '_' + option.value}" />
+                                    <label th:for="${field.name + '_' + option.value}" 
+                                           class="form-check-label" 
+                                           th:text="${option.label}">Radio</label>
+                                </div>
+                            </div>
+                            
+                            <!-- Error Messages -->
+                            <div th:if="${#fields.hasErrors(field.name)}" class="invalid-feedback d-block">
+                                <span th:errors="*{${field.name}}">Error</span>
+                            </div>
+                            
+                            <!-- Help Text -->
+                            <div th:if="${field.helpText}" class="form-text" th:text="${field.helpText}">Help text</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <a th:href="@{${listUrl}}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> 
+                            <span th:text="${isEdit ? 'Update' : 'Create'}">Save</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Form validation
+        (function() {
+            'use strict';
+            window.addEventListener('load', function() {
+                var forms = document.getElementsByClassName('needs-validation');
+                var validation = Array.prototype.filter.call(forms, function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+</body>
+</html> 

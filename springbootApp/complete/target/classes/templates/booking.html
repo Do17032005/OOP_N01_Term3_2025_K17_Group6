@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Book Tickets - Cinema Booking</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        }
+        .seat {
+            width: 40px;
+            height: 40px;
+            margin: 2px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .seat:hover {
+            background-color: #e9ecef;
+        }
+        .seat.selected {
+            background-color: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        .seat.occupied {
+            background-color: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+        .seat.available {
+            background-color: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+        .booking-step {
+            padding: 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .booking-step.active {
+            border-color: #667eea;
+            background-color: #f8f9ff;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-film"></i> Cinema Booking
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/movies">Movies</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/showtimes">Showtimes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/booking">Book Tickets</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/my-bookings">My Bookings</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register">Register</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <div class="bg-primary text-white py-4">
+        <div class="container">
+            <h1 class="mb-3">Book Tickets</h1>
+            <p class="lead">Select your movie, showtime, and seats</p>
+        </div>
+    </div>
+
+    <!-- Booking Steps -->
+    <div class="container mt-4">
+        <!-- Step 1: Select Movie -->
+        <div class="booking-step active" id="step1">
+            <h4><i class="bi bi-film"></i> Step 1: Select Movie</h4>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="movieSelect" class="form-label">Choose a Movie</label>
+                    <select class="form-select" id="movieSelect" onchange="loadShowtimes()">
+                        <option value="">Select a movie...</option>
+                        <option value="1">The Avengers</option>
+                        <option value="2">Titanic</option>
+                        <option value="3">The Lion King</option>
+                        <option value="4">Jurassic Park</option>
+                        <option value="5">The Matrix</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <div id="movieInfo" class="mt-3" style="display: none;">
+                        <h6>Movie Information</h6>
+                        <p id="movieTitle" class="mb-1"></p>
+                        <p id="movieGenre" class="mb-1"></p>
+                        <p id="movieDuration" class="mb-1"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Select Showtime -->
+        <div class="booking-step" id="step2">
+            <h4><i class="bi bi-calendar-event"></i> Step 2: Select Showtime</h4>
+            <div id="showtimesContainer" style="display: none;">
+                <div class="row" id="showtimesList">
+                    <!-- Showtimes will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Select Seats -->
+        <div class="booking-step" id="step3">
+            <h4><i class="bi bi-grid-3x3-gap"></i> Step 3: Select Seats</h4>
+            <div id="seatsContainer" style="display: none;">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="text-center mb-3">
+                            <h6>Screen</h6>
+                            <div class="bg-dark text-white py-2 rounded">SCREEN</div>
+                        </div>
+                        <div id="seatsGrid" class="text-center">
+                            <!-- Seats will be generated here -->
+                        </div>
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-center gap-4">
+                                <div><span class="seat available"></span> Available</div>
+                                <div><span class="seat selected"></span> Selected</div>
+                                <div><span class="seat occupied"></span> Occupied</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>Selected Seats</h6>
+                            </div>
+                            <div class="card-body">
+                                <div id="selectedSeats">No seats selected</div>
+                                <hr>
+                                <div class="d-flex justify-content-between">
+                                    <strong>Total:</strong>
+                                    <span id="totalPrice">$0.00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Payment -->
+        <div class="booking-step" id="step4">
+            <h4><i class="bi bi-credit-card"></i> Step 4: Payment</h4>
+            <div id="paymentContainer" style="display: none;">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Booking Summary</h6>
+                        <div id="bookingSummary">
+                            <!-- Booking summary will be shown here -->
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Payment Information</h6>
+                        <form id="paymentForm">
+                            <div class="mb-3">
+                                <label for="cardNumber" class="form-label">Card Number</label>
+                                <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456">
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="expiryDate" class="form-label">Expiry Date</label>
+                                    <input type="text" class="form-control" id="expiryDate" placeholder="MM/YY">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="cvv" class="form-label">CVV</label>
+                                    <input type="text" class="form-control" id="cvv" placeholder="123">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="cardName" class="form-label">Cardholder Name</label>
+                                <input type="text" class="form-control" id="cardName" placeholder="John Doe">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-credit-card"></i> Pay Now
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="d-flex justify-content-between mt-4">
+            <button class="btn btn-secondary" onclick="previousStep()" id="prevBtn" style="display: none;">
+                <i class="bi bi-arrow-left"></i> Previous
+            </button>
+            <button class="btn btn-primary" onclick="nextStep()" id="nextBtn">
+                Next <i class="bi bi-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Cinema Booking System</h5>
+                    <p>Your premier destination for movie tickets</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; 2024 Cinema Booking. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentStep = 1;
+        let selectedSeats = [];
+        let selectedShowtime = null;
+        let selectedMovie = null;
+
+        function loadShowtimes() {
+            const movieSelect = document.getElementById('movieSelect');
+            const movieId = movieSelect.value;
+            
+            if (movieId) {
+                // Simulate loading showtimes
+                document.getElementById('showtimesContainer').style.display = 'block';
+                document.getElementById('showtimesList').innerHTML = `
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6>Today, 2:00 PM</h6>
+                                <p class="text-muted">Room A</p>
+                                <button class="btn btn-primary btn-sm" onclick="selectShowtime(1, '2:00 PM', 'Room A')">Select</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6>Today, 5:30 PM</h6>
+                                <p class="text-muted">Room B</p>
+                                <button class="btn btn-primary btn-sm" onclick="selectShowtime(2, '5:30 PM', 'Room B')">Select</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6>Today, 8:00 PM</h6>
+                                <p class="text-muted">Room A</p>
+                                <button class="btn btn-primary btn-sm" onclick="selectShowtime(3, '8:00 PM', 'Room A')">Select</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function selectShowtime(id, time, room) {
+            selectedShowtime = { id, time, room };
+            document.querySelectorAll('#showtimesList .btn').forEach(btn => btn.classList.remove('btn-success'));
+            event.target.classList.add('btn-success');
+        }
+
+        function generateSeats() {
+            const seatsGrid = document.getElementById('seatsGrid');
+            let html = '';
+            
+            for (let row = 0; row < 8; row++) {
+                const rowLetter = String.fromCharCode(65 + row);
+                html += '<div class="mb-2">';
+                for (let col = 1; col <= 10; col++) {
+                    const seatId = `${rowLetter}${col}`;
+                    const isOccupied = Math.random() < 0.3; // 30% chance of being occupied
+                    html += `<span class="seat ${isOccupied ? 'occupied' : 'available'}" 
+                                   onclick="toggleSeat('${seatId}')" 
+                                   data-seat="${seatId}">${seatId}</span>`;
+                }
+                html += '</div>';
+            }
+            seatsGrid.innerHTML = html;
+        }
+
+        function toggleSeat(seatId) {
+            const seatElement = document.querySelector(`[data-seat="${seatId}"]`);
+            
+            if (seatElement.classList.contains('occupied')) {
+                return;
+            }
+            
+            if (seatElement.classList.contains('selected')) {
+                seatElement.classList.remove('selected');
+                selectedSeats = selectedSeats.filter(seat => seat !== seatId);
+            } else {
+                seatElement.classList.add('selected');
+                selectedSeats.push(seatId);
+            }
+            
+            updateSelectedSeats();
+        }
+
+        function updateSelectedSeats() {
+            const selectedSeatsDiv = document.getElementById('selectedSeats');
+            const totalPrice = document.getElementById('totalPrice');
+            
+            if (selectedSeats.length === 0) {
+                selectedSeatsDiv.textContent = 'No seats selected';
+                totalPrice.textContent = '$0.00';
+            } else {
+                selectedSeatsDiv.innerHTML = selectedSeats.map(seat => 
+                    `<span class="badge bg-primary me-1">${seat}</span>`
+                ).join('');
+                totalPrice.textContent = `$${(selectedSeats.length * 12.99).toFixed(2)}`;
+            }
+        }
+
+        function nextStep() {
+            if (currentStep < 4) {
+                currentStep++;
+                updateStepDisplay();
+            } else {
+                // Submit booking
+                alert('Booking submitted successfully!');
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepDisplay();
+            }
+        }
+
+        function updateStepDisplay() {
+            // Hide all steps
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`step${i}`).classList.remove('active');
+                document.getElementById(`step${i}`).style.display = 'none';
+            }
+            
+            // Show current step
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            document.getElementById(`step${currentStep}`).style.display = 'block';
+            
+            // Show previous steps
+            for (let i = 1; i < currentStep; i++) {
+                document.getElementById(`step${i}`).style.display = 'block';
+            }
+            
+            // Update buttons
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            if (currentStep === 1) {
+                prevBtn.style.display = 'none';
+            } else {
+                prevBtn.style.display = 'block';
+            }
+            
+            if (currentStep === 4) {
+                nextBtn.textContent = 'Confirm Booking';
+            } else {
+                nextBtn.innerHTML = 'Next <i class="bi bi-arrow-right"></i>';
+            }
+            
+            // Load step-specific content
+            if (currentStep === 3) {
+                document.getElementById('seatsContainer').style.display = 'block';
+                generateSeats();
+            } else if (currentStep === 4) {
+                document.getElementById('paymentContainer').style.display = 'block';
+                updateBookingSummary();
+            }
+        }
+
+        function updateBookingSummary() {
+            const summary = document.getElementById('bookingSummary');
+            summary.innerHTML = `
+                <p><strong>Movie:</strong> ${document.getElementById('movieSelect').options[document.getElementById('movieSelect').selectedIndex].text}</p>
+                <p><strong>Showtime:</strong> ${selectedShowtime ? selectedShowtime.time : 'Not selected'}</p>
+                <p><strong>Room:</strong> ${selectedShowtime ? selectedShowtime.room : 'Not selected'}</p>
+                <p><strong>Seats:</strong> ${selectedSeats.join(', ')}</p>
+                <p><strong>Total:</strong> $${(selectedSeats.length * 12.99).toFixed(2)}</p>
+            `;
+        }
+
+        // Initialize
+        updateStepDisplay();
+    </script>
+</body>
+</html> 

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Dashboard - Cinema Booking</title>
+</head>
+<body>
+    <div th:fragment="content">
+        <!-- Page Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-house"></i> Dashboard</h2>
+            <div>
+                <a href="/bookings/new" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> New Booking
+                </a>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="mb-1">Total Movies</h6>
+                            <h3 th:text="${movieCount ?: 0}">0</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-film" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="mb-1">Active Showtimes</h6>
+                            <h3 th:text="${showtimeCount ?: 0}">0</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-calendar-event" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="mb-1">Total Bookings</h6>
+                            <h3 th:text="${bookingCount ?: 0}">0</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-ticket-perforated" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stats-card">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6 class="mb-1">Total Users</h6>
+                            <h3 th:text="${userCount ?: 0}">0</h3>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="bi bi-people" style="font-size: 2rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-lightning"></i> Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-2">
+                                <a href="/movies" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-film"></i> Manage Movies
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <a href="/showtimes" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-calendar-plus"></i> Add Showtime
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <a href="/bookings" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-ticket-perforated"></i> View Bookings
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <a href="/tickets" class="btn btn-outline-primary w-100">
+                                    <i class="bi bi-receipt"></i> Manage Tickets
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activities -->
+        <div class="row">
+            <!-- Recent Movies -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-film"></i> Recent Movies</h5>
+                        <a href="/movies" class="btn btn-sm btn-primary">View All</a>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${recentMovies}" class="list-group list-group-flush">
+                            <div th:each="movie : ${recentMovies}" class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1" th:text="${movie.title}">Movie Title</h6>
+                                    <small class="text-muted" th:text="${movie.genre} + ' • ' + ${movie.duration} + ' min'">Genre • Duration</small>
+                                </div>
+                                <span class="badge bg-primary rounded-pill" th:text="${movie.ageRating} + '+'">13+</span>
+                            </div>
+                        </div>
+                        <div th:unless="${recentMovies}" class="text-center text-muted py-3">
+                            <i class="bi bi-film" style="font-size: 2rem;"></i>
+                            <p class="mt-2">No movies available</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Bookings -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-ticket-perforated"></i> Recent Bookings</h5>
+                        <a href="/bookings" class="btn btn-sm btn-primary">View All</a>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${recentBookings}" class="list-group list-group-flush">
+                            <div th:each="booking : ${recentBookings}" class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1" th:text="${booking.bookingNumber}">Booking #</h6>
+                                    <small class="text-muted" th:text="${#temporals.format(booking.bookingDate, 'dd/MM/yyyy HH:mm')}">Date</small>
+                                </div>
+                                <span class="status-badge" 
+                                      th:classappend="'status-' + ${#strings.toLowerCase(booking.status)}"
+                                      th:text="${booking.status}">CONFIRMED</span>
+                            </div>
+                        </div>
+                        <div th:unless="${recentBookings}" class="text-center text-muted py-3">
+                            <i class="bi bi-ticket-perforated" style="font-size: 2rem;"></i>
+                            <p class="mt-2">No bookings available</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Showtimes -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-calendar-event"></i> Today's Showtimes</h5>
+                        <a href="/showtimes" class="btn btn-sm btn-primary">View All</a>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${todayShowtimes}" class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Movie</th>
+                                        <th>Room</th>
+                                        <th>Time</th>
+                                        <th>Price</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="showtime : ${todayShowtimes}">
+                                        <td th:text="${showtime.movie?.title}">Movie Title</td>
+                                        <td th:text="${showtime.room?.name}">Room A</td>
+                                        <td th:text="${#temporals.format(showtime.startTime, 'HH:mm')} + ' - ' + ${#temporals.format(showtime.endTime, 'HH:mm')}">14:00 - 16:30</td>
+                                        <td th:text="${#numbers.formatDecimal(showtime.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">90,000 VND</td>
+                                        <td>
+                                            <a th:href="@{/bookings/new(showtimeId=${showtime.id})}" class="btn btn-sm btn-primary">
+                                                <i class="bi bi-ticket-perforated"></i> Book
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div th:unless="${todayShowtimes}" class="text-center text-muted py-3">
+                            <i class="bi bi-calendar-event" style="font-size: 2rem;"></i>
+                            <p class="mt-2">No showtimes today</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

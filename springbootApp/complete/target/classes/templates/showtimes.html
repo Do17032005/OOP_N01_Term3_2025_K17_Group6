@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Showtimes - Cinema Booking</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        }
+        .showtime-card {
+            transition: transform 0.3s ease;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .showtime-card:hover {
+            transform: translateY(-5px);
+        }
+        .date-selector {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        .time-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-film"></i> Cinema Booking
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/movies">Movies</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/showtimes">Showtimes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/booking">Book Tickets</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/my-bookings">My Bookings</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register">Register</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <div class="bg-primary text-white py-4">
+        <div class="container">
+            <h1 class="mb-3">Showtimes</h1>
+            <p class="lead">Check movie schedules and book your tickets</p>
+        </div>
+    </div>
+
+    <!-- Date Selector -->
+    <div class="container mt-4">
+        <div class="date-selector">
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <label for="dateSelect" class="form-label">Select Date</label>
+                    <select class="form-select" id="dateSelect" onchange="filterShowtimes()">
+                        <option value="today">Today</option>
+                        <option value="tomorrow">Tomorrow</option>
+                        <option value="day3">Day 3</option>
+                        <option value="day4">Day 4</option>
+                        <option value="day5">Day 5</option>
+                        <option value="day6">Day 6</option>
+                        <option value="day7">Day 7</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="movieFilter" class="form-label">Filter by Movie</label>
+                    <select class="form-select" id="movieFilter" onchange="filterShowtimes()">
+                        <option value="">All Movies</option>
+                        <option value="1">The Avengers</option>
+                        <option value="2">Titanic</option>
+                        <option value="3">The Lion King</option>
+                        <option value="4">Jurassic Park</option>
+                        <option value="5">The Matrix</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="timeFilter" class="form-label">Filter by Time</label>
+                    <select class="form-select" id="timeFilter" onchange="filterShowtimes()">
+                        <option value="">All Times</option>
+                        <option value="morning">Morning (6AM - 12PM)</option>
+                        <option value="afternoon">Afternoon (12PM - 6PM)</option>
+                        <option value="evening">Evening (6PM - 12AM)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Showtimes Grid -->
+    <div class="container mt-4">
+        <div class="row" id="showtimesContainer">
+            <!-- Showtime cards will be loaded here -->
+        </div>
+        
+        <!-- No showtimes found -->
+        <div class="text-center py-5" id="noShowtimes" style="display: none;">
+            <i class="bi bi-calendar-x display-1 text-muted"></i>
+            <h3 class="mt-3">No showtimes found</h3>
+            <p class="text-muted">Try selecting a different date or movie</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Cinema Booking System</h5>
+                    <p>Your premier destination for movie tickets</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p>&copy; 2024 Cinema Booking. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sample showtimes data
+        const showtimesData = [
+            {
+                id: 1,
+                movieId: 1,
+                movieTitle: "The Avengers",
+                movieGenre: "Action",
+                date: "today",
+                time: "2:00 PM",
+                endTime: "4:30 PM",
+                room: "Room A",
+                price: 12.99,
+                availableSeats: 45
+            },
+            {
+                id: 2,
+                movieId: 1,
+                movieTitle: "The Avengers",
+                movieGenre: "Action",
+                date: "today",
+                time: "5:30 PM",
+                endTime: "8:00 PM",
+                room: "Room B",
+                price: 12.99,
+                availableSeats: 32
+            },
+            {
+                id: 3,
+                movieId: 2,
+                movieTitle: "Titanic",
+                movieGenre: "Romance",
+                date: "today",
+                time: "8:00 PM",
+                endTime: "11:00 PM",
+                room: "Room A",
+                price: 11.99,
+                availableSeats: 28
+            },
+            {
+                id: 4,
+                movieId: 3,
+                movieTitle: "The Lion King",
+                movieGenre: "Animation",
+                date: "tomorrow",
+                time: "10:00 AM",
+                endTime: "11:45 AM",
+                room: "Room C",
+                price: 9.99,
+                availableSeats: 50
+            },
+            {
+                id: 5,
+                movieId: 4,
+                movieTitle: "Jurassic Park",
+                movieGenre: "Adventure",
+                date: "tomorrow",
+                time: "3:00 PM",
+                endTime: "5:15 PM",
+                room: "Room A",
+                price: 12.99,
+                availableSeats: 38
+            },
+            {
+                id: 6,
+                movieId: 5,
+                movieTitle: "The Matrix",
+                movieGenre: "Sci-Fi",
+                date: "day3",
+                time: "7:00 PM",
+                endTime: "9:15 PM",
+                room: "Room B",
+                price: 13.99,
+                availableSeats: 25
+            }
+        ];
+
+        function filterShowtimes() {
+            const selectedDate = document.getElementById('dateSelect').value;
+            const selectedMovie = document.getElementById('movieFilter').value;
+            const selectedTime = document.getElementById('timeFilter').value;
+
+            let filteredShowtimes = showtimesData.filter(showtime => {
+                // Filter by date
+                if (selectedDate && showtime.date !== selectedDate) {
+                    return false;
+                }
+
+                // Filter by movie
+                if (selectedMovie && showtime.movieId.toString() !== selectedMovie) {
+                    return false;
+                }
+
+                // Filter by time
+                if (selectedTime) {
+                    const hour = parseInt(showtime.time.split(':')[0]);
+                    const isPM = showtime.time.includes('PM');
+                    const hour24 = isPM && hour !== 12 ? hour + 12 : hour === 12 && !isPM ? 0 : hour;
+
+                    if (selectedTime === 'morning' && (hour24 < 6 || hour24 >= 12)) {
+                        return false;
+                    }
+                    if (selectedTime === 'afternoon' && (hour24 < 12 || hour24 >= 18)) {
+                        return false;
+                    }
+                    if (selectedTime === 'evening' && (hour24 < 18 || hour24 >= 24)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+            displayShowtimes(filteredShowtimes);
+        }
+
+        function displayShowtimes(showtimes) {
+            const container = document.getElementById('showtimesContainer');
+            const noShowtimes = document.getElementById('noShowtimes');
+
+            if (showtimes.length === 0) {
+                container.innerHTML = '';
+                noShowtimes.style.display = 'block';
+                return;
+            }
+
+            noShowtimes.style.display = 'none';
+            container.innerHTML = showtimes.map(showtime => `
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card showtime-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">${showtime.movieTitle}</h5>
+                            <span class="badge time-badge mb-2">${showtime.movieGenre}</span>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <i class="bi bi-clock"></i>
+                                    <span class="ms-1">${showtime.time} - ${showtime.endTime}</span>
+                                </div>
+                                <div>
+                                    <i class="bi bi-geo-alt"></i>
+                                    <span class="ms-1">${showtime.room}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <i class="bi bi-people"></i>
+                                    <span class="ms-1">${showtime.availableSeats} seats available</span>
+                                </div>
+                                <div>
+                                    <strong class="text-primary">$${showtime.price}</strong>
+                                </div>
+                            </div>
+                            <a href="/booking?showtimeId=${showtime.id}" class="btn btn-primary w-100">
+                                <i class="bi bi-ticket-perforated"></i> Book Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize
+        filterShowtimes();
+    </script>
+</body>
+</html> 
