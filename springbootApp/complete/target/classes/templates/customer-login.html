@@ -31,8 +31,12 @@
             </div>
             <div th:if="${loginError}" class="alert alert-danger text-center mt-2" th:text="${loginError}"></div>
         </form>
+        <div class="text-center mt-3">
+            <span>Bạn chưa có tài khoản?</span>
+            <a th:href="@{/register}" class="link-primary">Đăng ký ngay</a>
+        </div>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html> 
+</html>
