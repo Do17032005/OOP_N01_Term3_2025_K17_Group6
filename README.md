@@ -70,7 +70,7 @@
 
 1. Clone repo:
    ```
-   git clone https://github.com/Rumnn/OOP_N01_Term3_2025_K17_Group6
+   git clone https://github.com/Do17032005/OOP_N01_Term3_2025_K17_Group6
    ```
 2. Cài đặt MySQL, tạo database và cấu hình kết nối trong `application.properties`.
 3. Build và chạy ứng dụng:
