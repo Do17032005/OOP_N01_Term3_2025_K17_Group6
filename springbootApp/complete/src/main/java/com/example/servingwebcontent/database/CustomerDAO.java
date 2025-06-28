@@ -11,12 +11,7 @@ public class CustomerDAO {
         List<Customer> customers = new ArrayList<>();
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "SELECT * FROM Customer";
             try (Statement stmt = conn.createStatement();
                  ResultSet rs = stmt.executeQuery(sql)) {
@@ -41,12 +36,7 @@ public class CustomerDAO {
     public void insertCustomer(Customer c) {
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "INSERT INTO Customer (id, name, email, phoneNumber) VALUES (?, ?, ?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, c.getId());
@@ -66,12 +56,7 @@ public class CustomerDAO {
     public void updateCustomer(Customer c) {
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "UPDATE Customer SET name=?, email=?, phoneNumber=? WHERE id=?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, c.getName());
@@ -91,12 +76,7 @@ public class CustomerDAO {
     public void deleteCustomer(String id) {
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "DELETE FROM Customer WHERE id=?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, id);

@@ -11,12 +11,7 @@ public class SeatDAO {
         List<Seat> seats = new ArrayList<>();
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "SELECT * FROM Seat";
             try (Statement stmt = conn.createStatement();
                  ResultSet rs = stmt.executeQuery(sql)) {
@@ -40,12 +35,7 @@ public class SeatDAO {
     public void insertSeat(Seat seat) {
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "INSERT INTO Seat (id, roomId, seatNumber) VALUES (?, ?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, seat.getId());
@@ -63,12 +53,7 @@ public class SeatDAO {
     public void updateSeat(Seat seat) {
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "UPDATE Seat SET roomId=?, seatNumber=? WHERE id=?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, seat.getRoomId());
@@ -86,12 +71,7 @@ public class SeatDAO {
     public void deleteSeat(String id) {
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "DELETE FROM Seat WHERE id=?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, id);

@@ -11,12 +11,7 @@ public class ShowtimeDAO {
         List<Showtime> showtimes = new ArrayList<>();
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "SELECT * FROM Showtime";
             try (Statement stmt = conn.createStatement();
                  ResultSet rs = stmt.executeQuery(sql)) {
@@ -41,12 +36,7 @@ public class ShowtimeDAO {
     public void insertShowtime(Showtime st) {
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "INSERT INTO Showtime (id, movieId, roomId, startTime) VALUES (?, ?, ?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, st.getId());
@@ -65,12 +55,7 @@ public class ShowtimeDAO {
     public void updateShowtime(Showtime st) {
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "UPDATE Showtime SET movieId=?, roomId=?, startTime=? WHERE id=?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, st.getMovieId());
@@ -89,12 +74,7 @@ public class ShowtimeDAO {
     public void deleteShowtime(String id) {
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "DELETE FROM Showtime WHERE id=?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, id);

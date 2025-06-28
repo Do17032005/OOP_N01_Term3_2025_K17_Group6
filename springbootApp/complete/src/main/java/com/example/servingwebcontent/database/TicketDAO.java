@@ -11,12 +11,7 @@ public class TicketDAO {
         List<Ticket> tickets = new ArrayList<>();
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "SELECT * FROM Ticket";
             try (Statement stmt = conn.createStatement();
                  ResultSet rs = stmt.executeQuery(sql)) {
@@ -42,12 +37,7 @@ public class TicketDAO {
     public Ticket findTicketById(String id) {
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "SELECT * FROM Ticket WHERE id = ?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, id);
@@ -74,12 +64,7 @@ public class TicketDAO {
     public void insertTicket(Ticket t) {
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "INSERT INTO Ticket (id, showtimeId, seatId, customerId, price) VALUES (?, ?, ?, ?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, t.getId());
@@ -99,12 +84,7 @@ public class TicketDAO {
     public void updateTicket(Ticket t) {
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "UPDATE Ticket SET showtimeId=?, seatId=?, customerId=?, price=? WHERE id=?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, t.getShowtimeId());
@@ -124,12 +104,7 @@ public class TicketDAO {
     public void deleteTicket(String id) {
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "DELETE FROM Ticket WHERE id=?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, id);

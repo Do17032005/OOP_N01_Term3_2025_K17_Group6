@@ -11,12 +11,7 @@ public class MovieDAO {
         List<Movie> movies = new ArrayList<>();
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "SELECT * FROM Movie";
             try (Statement stmt = conn.createStatement();
                  ResultSet rs = stmt.executeQuery(sql)) {
@@ -45,12 +40,7 @@ public class MovieDAO {
     public void insertMovie(Movie m) {
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "INSERT INTO Movie (id, name, title, showTime, dateTime, duration, genre, age) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, m.getId());
@@ -73,12 +63,7 @@ public class MovieDAO {
     public void updateMovie(Movie m) {
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "UPDATE Movie SET name=?, title=?, showTime=?, dateTime=?, duration=?, genre=?, age=? WHERE id=?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, m.getName());
@@ -101,12 +86,7 @@ public class MovieDAO {
     public void deleteMovie(String id) {
         Connection conn = null;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection(
-                "jdbc:mysql://avnadmin:AVNS_OY6UdTSUCEJY08Wic_V@mysql-1bf49a9c-nghiengame005.c.aivencloud.com:27021/defaultdb?ssl-mode=REQUIRED",
-                "avnadmin",
-                "AVNS_OY6UdTSUCEJY08Wic_V"
-            );
+            conn = AivenConnection.getConnection();
             String sql = "DELETE FROM Movie WHERE id=?";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, id);
