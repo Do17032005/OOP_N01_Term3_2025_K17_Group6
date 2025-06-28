@@ -1,11 +1,13 @@
 package com.example.servingwebcontent.database;
 
 import com.example.servingwebcontent.model.Ticket;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class TicketDAO {
     public List<Ticket> getAllTickets() {
         List<Ticket> tickets = new ArrayList<>();

@@ -1,11 +1,13 @@
 package com.example.servingwebcontent.database;
 
 import com.example.servingwebcontent.model.Showtime;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class ShowtimeDAO {
     public List<Showtime> getAllShowtimes() {
         List<Showtime> showtimes = new ArrayList<>();

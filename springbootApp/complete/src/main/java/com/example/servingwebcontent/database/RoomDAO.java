@@ -1,11 +1,13 @@
 package com.example.servingwebcontent.database;
 
 import com.example.servingwebcontent.model.Room;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class RoomDAO {
     public List<Room> getAllRooms() {
         List<Room> rooms = new ArrayList<>();

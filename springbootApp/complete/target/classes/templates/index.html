@@ -5,98 +5,182 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <style>
-        body { background: #f8fafc; }
-        .main-title { color: #0d6efd; font-weight: 700; margin-bottom: 32px; }
-        .card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.12); transform: translateY(-4px); }
-        .card { transition: box-shadow 0.2s, transform 0.2s; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.10); }
-        .icon-feature { font-size: 3rem; color: #0d6efd; margin-bottom: 16px; }
-        .btn-main { background: #0d6efd; color: #fff; font-weight: 600; border-radius: 8px; padding: 12px 32px; font-size: 1.1rem; }
-        .btn-main:hover { background: #0b5ed7; color: #fff; }
-        .feature-link { text-decoration: none; }
+        body { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .main-title { 
+            color: #fff; 
+            font-weight: 700; 
+            margin-bottom: 32px; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .card { 
+            transition: all 0.3s ease; 
+            border-radius: 16px; 
+            border: none;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            background: rgba(255,255,255,0.95);
+        }
+        .card:hover { 
+            transform: translateY(-8px); 
+            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+        }
+        .icon-feature { 
+            font-size: 3.5rem; 
+            color: #667eea; 
+            margin-bottom: 16px; 
+        }
+        .btn-main { 
+            background: linear-gradient(45deg, #667eea, #764ba2); 
+            color: #fff; 
+            font-weight: 600; 
+            border-radius: 25px; 
+            padding: 12px 32px; 
+            font-size: 1.1rem; 
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-main:hover { 
+            background: linear-gradient(45deg, #764ba2, #667eea); 
+            color: #fff; 
+            transform: scale(1.05);
+        }
+        .feature-link { 
+            text-decoration: none; 
+            color: inherit;
+        }
+        .login-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .main-link {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        .main-link:hover {
+            background: rgba(255,255,255,0.3);
+            color: #fff;
+            transform: scale(1.05);
+            text-decoration: none;
+        }
+        .hero-section {
+            padding: 60px 0;
+            text-align: center;
+        }
+        .user-info {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .user-info .alert {
+            background: rgba(25, 135, 84, 0.9);
+            border: none;
+            color: white;
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
-  <div class="container">
-    <a class="navbar-brand fw-bold" href="/">🎬 Bán Vé Xem Phim</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="/booking/movies"><i class="bi bi-ticket-perforated"></i> Đặt vé</a></li>
-        <li class="nav-item"><a class="nav-link" href="/movies"><i class="bi bi-film"></i> Quản lý phim</a></li>
-        <li class="nav-item"><a class="nav-link" href="/tickets"><i class="bi bi-receipt"></i> Quản lý vé</a></li>
-        <li class="nav-item"><a class="nav-link" href="/customers"><i class="bi bi-people"></i> Quản lý khách hàng</a></li>
-        <li class="nav-item"><a class="nav-link" href="/tickets/lookup"><i class="bi bi-search"></i> Tra cứu vé</a></li>
-        <li class="nav-item" th:if="${loggedInCustomer == null}"><a class="nav-link" href="/login"><i class="bi bi-box-arrow-in-right"></i> Đăng nhập</a></li>
-        <li class="nav-item dropdown" th:if="${loggedInCustomer != null}">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-person-circle"></i> <span th:text="${loggedInCustomer.name}">Khách hàng</span>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Đăng xuất</a></li>
-          </ul>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
-<div class="container py-5">
-    <h1 class="main-title text-center">Hệ thống bán vé xem phim hiện đại</h1>
-    <div class="row g-4 justify-content-center">
-        <div class="col-md-4 col-sm-6">
-            <a href="/booking/movies" class="feature-link">
-                <div class="card text-center p-4 h-100">
-                    <div class="icon-feature"><i class="bi bi-ticket-perforated"></i></div>
-                    <h5 class="card-title mb-3">Đặt vé xem phim</h5>
-                    <p class="card-text text-muted">Chọn phim, suất chiếu, ghế và đặt vé nhanh chóng.</p>
-                    <a href="/booking/movies" class="btn btn-main mt-2">Đặt vé ngay</a>
+    <div class="hero-section">
+        <div class="container">
+            <h1 class="main-title">🎬 Hệ thống bán vé xem phim</h1>
+            <p class="text-white mb-4" style="font-size: 1.2rem; opacity: 0.9;">Quản lý và đặt vé xem phim một cách dễ dàng</p>
+            
+            <div class="login-section">
+                <!-- Show user info if logged in -->
+                <div th:if="${loggedInCustomer}" class="user-info">
+                    <div class="alert alert-success" role="alert">
+                        <i class="bi bi-person-check me-2"></i>
+                        <strong>Xin chào, </strong>
+                        <span th:text="${loggedInCustomer.name}">Tên người dùng</span>
+                        <span class="text-muted">(</span>
+                        <span th:text="${loggedInCustomer.email}">email</span>
+                        <span class="text-muted">)</span>
+                    </div>
+                    <div class="mt-2">
+                        <a href="/logout" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-box-arrow-left me-1"></i>Đăng xuất
+                        </a>
+                    </div>
                 </div>
-            </a>
-        </div>
-        <div class="col-md-4 col-sm-6">
-            <a href="/movies" class="feature-link">
-                <div class="card text-center p-4 h-100">
-                    <div class="icon-feature"><i class="bi bi-film"></i></div>
-                    <h5 class="card-title mb-3">Quản lý phim</h5>
-                    <p class="card-text text-muted">Thêm, sửa, xóa và xem danh sách phim đang chiếu.</p>
-                    <a href="/movies" class="btn btn-main mt-2">Xem phim</a>
+                
+                <!-- Show login link if not logged in -->
+                <div th:unless="${loggedInCustomer}">
+                    <a href="/customer/login" class="main-link">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập
+                    </a>
                 </div>
-            </a>
-        </div>
-        <div class="col-md-4 col-sm-6">
-            <a href="/tickets" class="feature-link">
-                <div class="card text-center p-4 h-100">
-                    <div class="icon-feature"><i class="bi bi-receipt"></i></div>
-                    <h5 class="card-title mb-3">Quản lý vé</h5>
-                    <p class="card-text text-muted">Xem, tra cứu, in và quản lý vé đã bán.</p>
-                    <a href="/tickets" class="btn btn-main mt-2">Xem vé</a>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-4 col-sm-6">
-            <a href="/customers" class="feature-link">
-                <div class="card text-center p-4 h-100">
-                    <div class="icon-feature"><i class="bi bi-people"></i></div>
-                    <h5 class="card-title mb-3">Quản lý khách hàng</h5>
-                    <p class="card-text text-muted">Quản lý thông tin khách hàng mua vé.</p>
-                    <a href="/customers" class="btn btn-main mt-2">Xem khách hàng</a>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-4 col-sm-6">
-            <a href="/tickets/lookup" class="feature-link">
-                <div class="card text-center p-4 h-100">
-                    <div class="icon-feature"><i class="bi bi-search"></i></div>
-                    <h5 class="card-title mb-3">Tra cứu vé</h5>
-                    <p class="card-text text-muted">Tìm kiếm và in lại vé đã đặt.</p>
-                    <a href="/tickets/lookup" class="btn btn-main mt-2">Tra cứu vé</a>
-                </div>
-            </a>
+            </div>
         </div>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <div class="container pb-5">
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-4 col-sm-6">
+                <a href="/booking/movies" class="feature-link">
+                    <div class="card text-center p-4 h-100">
+                        <div class="icon-feature"><i class="bi bi-ticket-perforated"></i></div>
+                        <h5 class="card-title mb-3">Đặt vé xem phim</h5>
+                        <p class="card-text text-muted">Chọn phim, suất chiếu, ghế và đặt vé nhanh chóng.</p>
+                        <a href="/booking/movies" class="btn btn-main mt-2">Đặt vé ngay</a>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <a href="/movies" class="feature-link">
+                    <div class="card text-center p-4 h-100">
+                        <div class="icon-feature"><i class="bi bi-film"></i></div>
+                        <h5 class="card-title mb-3">Danh sách phim đang chiếu</h5>
+                        <p class="card-text text-muted">Thêm, sửa, xóa và xem danh sách phim đang chiếu.</p>
+                        <a href="/movies" class="btn btn-main mt-2">Xem phim</a>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <a href="/tickets" class="feature-link">
+                    <div class="card text-center p-4 h-100">
+                        <div class="icon-feature"><i class="bi bi-receipt"></i></div>
+                        <h5 class="card-title mb-3">Danh sách vé đã bán</h5>
+                        <p class="card-text text-muted">Xem, tra cứu, in và quản lý vé đã bán.</p>
+                        <a href="/tickets" class="btn btn-main mt-2">Xem vé</a>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <a href="/customers" class="feature-link">
+                    <div class="card text-center p-4 h-100">
+                        <div class="icon-feature"><i class="bi bi-people"></i></div>
+                        <h5 class="card-title mb-3">Danh sách khách hàng</h5>
+                        <p class="card-text text-muted">Quản lý thông tin khách hàng mua vé.</p>
+                        <a href="/customers" class="btn btn-main mt-2">Xem khách hàng</a>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <a href="/tickets/lookup" class="feature-link">
+                    <div class="card text-center p-4 h-100">
+                        <div class="icon-feature"><i class="bi bi-search"></i></div>
+                        <h5 class="card-title mb-3">Tra cứu vé</h5>
+                        <p class="card-text text-muted">Tìm kiếm và in lại vé đã đặt.</p>
+                        <a href="/tickets/lookup" class="btn btn-main mt-2">Tra cứu vé</a>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html> 
