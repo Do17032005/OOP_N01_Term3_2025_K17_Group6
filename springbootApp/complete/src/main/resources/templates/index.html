@@ -1,186 +1,150 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Trang chủ - Bán vé xem phim</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <meta charset="UTF-8">
+    <title>Hệ thống bán vé xem phim</title>
     <style>
-        body { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        .main-title { 
-            color: #fff; 
-            font-weight: 700; 
-            margin-bottom: 32px; 
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        .card { 
-            transition: all 0.3s ease; 
-            border-radius: 16px; 
-            border: none;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-            background: rgba(255,255,255,0.95);
-        }
-        .card:hover { 
-            transform: translateY(-8px); 
-            box-shadow: 0 16px 48px rgba(0,0,0,0.2);
-        }
-        .icon-feature { 
-            font-size: 3.5rem; 
-            color: #667eea; 
-            margin-bottom: 16px; 
-        }
-        .btn-main { 
-            background: linear-gradient(45deg, #667eea, #764ba2); 
-            color: #fff; 
-            font-weight: 600; 
-            border-radius: 25px; 
-            padding: 12px 32px; 
-            font-size: 1.1rem; 
-            border: none;
-            transition: all 0.3s ease;
-        }
-        .btn-main:hover { 
-            background: linear-gradient(45deg, #764ba2, #667eea); 
-            color: #fff; 
-            transform: scale(1.05);
-        }
-        .feature-link { 
-            text-decoration: none; 
-            color: inherit;
-        }
-        .login-section {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        .main-link {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            color: #fff;
-            padding: 12px 30px;
-            border-radius: 25px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border: 2px solid rgba(255,255,255,0.3);
-        }
-        .main-link:hover {
-            background: rgba(255,255,255,0.3);
-            color: #fff;
-            transform: scale(1.05);
-            text-decoration: none;
-        }
-        .hero-section {
-            padding: 60px 0;
-            text-align: center;
-        }
-        .user-info {
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
             padding: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+            background-color: #f5f5f5;
         }
-        .user-info .alert {
-            background: rgba(25, 135, 84, 0.9);
-            border: none;
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .menu-item {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.3s;
+        }
+        .menu-item:hover {
+            background: #e9ecef;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #007bff;
             color: white;
-            border-radius: 10px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn-success {
+            background: #28a745;
+        }
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .alert-danger {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
         }
     </style>
 </head>
 <body>
-    <div class="hero-section">
-        <div class="container">
-            <h1 class="main-title">🎬 Hệ thống bán vé xem phim</h1>
-            <p class="text-white mb-4" style="font-size: 1.2rem; opacity: 0.9;">Quản lý và đặt vé xem phim một cách dễ dàng</p>
+    <div class="container">
+        <h1>🎬 Hệ thống bán vé xem phim</h1>
+        
+        <!-- Flash Messages -->
+        <div th:if="${success}" class="alert alert-success">
+            <span th:text="${success}">Thành công</span>
+        </div>
+        <div th:if="${error}" class="alert alert-danger">
+            <span th:text="${error}">Lỗi</span>
+        </div>
+
+        <!-- Main Menu -->
+        <div class="menu-grid">
+            <a href="/booking/movies" class="menu-item">
+                <h3>🎫 Đặt vé</h3>
+                <p>Đặt vé xem phim mới</p>
+            </a>
             
-            <div class="login-section">
-                <!-- Show user info if logged in -->
-                <div th:if="${loggedInCustomer}" class="user-info">
-                    <div class="alert alert-success" role="alert">
-                        <i class="bi bi-person-check me-2"></i>
-                        <strong>Xin chào, </strong>
-                        <span th:text="${loggedInCustomer.name}">Tên người dùng</span>
-                        <span class="text-muted">(</span>
-                        <span th:text="${loggedInCustomer.email}">email</span>
-                        <span class="text-muted">)</span>
-                    </div>
-                    <div class="mt-2">
-                        <a href="/logout" class="btn btn-outline-danger btn-sm">
-                            <i class="bi bi-box-arrow-left me-1"></i>Đăng xuất
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- Show login link if not logged in -->
-                <div th:unless="${loggedInCustomer}">
-                    <a href="/customer/login" class="main-link">
-                        <i class="bi bi-box-arrow-in-right me-2"></i>Đăng nhập
-                    </a>
-                </div>
-            </div>
+            <a href="/ticket/lookup" class="menu-item">
+                <h3>🔍 Tra cứu vé</h3>
+                <p>Tra cứu thông tin vé</p>
+            </a>
+            
+            <a href="/login" class="menu-item">
+                <h3>👤 Đăng nhập</h3>
+                <p>Đăng nhập vào hệ thống</p>
+            </a>
+            
+            <a href="/register" class="menu-item">
+                <h3>📝 Đăng ký</h3>
+                <p>Đăng ký tài khoản mới</p>
+            </a>
+        </div>
+
+        <!-- Admin Menu -->
+        <h2>Quản lý hệ thống</h2>
+        <div class="menu-grid">
+            <a href="/movie/list" class="menu-item">
+                <h3>🎬 Phim</h3>
+                <p>Quản lý danh sách phim</p>
+            </a>
+            
+            <a href="/showtime/list" class="menu-item">
+                <h3>📅 Suất chiếu</h3>
+                <p>Quản lý suất chiếu</p>
+            </a>
+            
+            <a href="/room/list" class="menu-item">
+                <h3>🏢 Phòng chiếu</h3>
+                <p>Quản lý phòng chiếu</p>
+            </a>
+            
+            <a href="/seat/list" class="menu-item">
+                <h3>💺 Ghế</h3>
+                <p>Quản lý ghế ngồi</p>
+            </a>
+            
+            <a href="/customer/list" class="menu-item">
+                <h3>👥 Khách hàng</h3>
+                <p>Quản lý khách hàng</p>
+            </a>
+            
+            <a href="/ticket/list" class="menu-item">
+                <h3>🎫 Vé</h3>
+                <p>Quản lý vé</p>
+            </a>
         </div>
     </div>
-
-    <div class="container pb-5">
-        <div class="row g-4 justify-content-center">
-            <div class="col-md-4 col-sm-6">
-                <a href="/booking/movies" class="feature-link">
-                    <div class="card text-center p-4 h-100">
-                        <div class="icon-feature"><i class="bi bi-ticket-perforated"></i></div>
-                        <h5 class="card-title mb-3">Đặt vé xem phim</h5>
-                        <p class="card-text text-muted">Chọn phim, suất chiếu, ghế và đặt vé nhanh chóng.</p>
-                        <a href="/booking/movies" class="btn btn-main mt-2">Đặt vé ngay</a>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4 col-sm-6">
-                <a href="/movies" class="feature-link">
-                    <div class="card text-center p-4 h-100">
-                        <div class="icon-feature"><i class="bi bi-film"></i></div>
-                        <h5 class="card-title mb-3">Danh sách phim đang chiếu</h5>
-                        <p class="card-text text-muted">Thêm, sửa, xóa và xem danh sách phim đang chiếu.</p>
-                        <a href="/movies" class="btn btn-main mt-2">Xem phim</a>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4 col-sm-6">
-                <a href="/tickets" class="feature-link">
-                    <div class="card text-center p-4 h-100">
-                        <div class="icon-feature"><i class="bi bi-receipt"></i></div>
-                        <h5 class="card-title mb-3">Danh sách vé đã bán</h5>
-                        <p class="card-text text-muted">Xem, tra cứu, in và quản lý vé đã bán.</p>
-                        <a href="/tickets" class="btn btn-main mt-2">Xem vé</a>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4 col-sm-6">
-                <a href="/customers" class="feature-link">
-                    <div class="card text-center p-4 h-100">
-                        <div class="icon-feature"><i class="bi bi-people"></i></div>
-                        <h5 class="card-title mb-3">Danh sách khách hàng</h5>
-                        <p class="card-text text-muted">Quản lý thông tin khách hàng mua vé.</p>
-                        <a href="/customers" class="btn btn-main mt-2">Xem khách hàng</a>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4 col-sm-6">
-                <a href="/tickets/lookup" class="feature-link">
-                    <div class="card text-center p-4 h-100">
-                        <div class="icon-feature"><i class="bi bi-search"></i></div>
-                        <h5 class="card-title mb-3">Tra cứu vé</h5>
-                        <p class="card-text text-muted">Tìm kiếm và in lại vé đã đặt.</p>
-                        <a href="/tickets/lookup" class="btn btn-main mt-2">Tra cứu vé</a>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html> 

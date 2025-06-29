@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Sửa thông tin khách hàng - Hệ thống bán vé xem phim</title>
+    <title>Đăng nhập - Hệ thống bán vé xem phim</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -11,8 +11,8 @@
             background-color: #f5f5f5;
         }
         .container {
-            max-width: 600px;
-            margin: 0 auto;
+            max-width: 400px;
+            margin: 50px auto;
             background: white;
             padding: 30px;
             border-radius: 8px;
@@ -32,7 +32,7 @@
             font-weight: bold;
             color: #333;
         }
-        input[type="text"], input[type="email"] {
+        input[type="text"], input[type="password"], input[type="email"] {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
@@ -40,34 +40,30 @@
             font-size: 16px;
             box-sizing: border-box;
         }
-        input[type="text"]:focus, input[type="email"]:focus {
+        input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus {
             outline: none;
             border-color: #007bff;
             box-shadow: 0 0 5px rgba(0,123,255,0.3);
         }
         .btn {
-            display: inline-block;
-            padding: 10px 20px;
+            width: 100%;
+            padding: 12px;
             background: #007bff;
             color: white;
-            text-decoration: none;
             border: none;
             border-radius: 4px;
             font-size: 16px;
             cursor: pointer;
-            margin: 5px;
+            margin-bottom: 15px;
         }
         .btn:hover {
             background: #0056b3;
         }
-        .btn-success {
-            background: #28a745;
-        }
-        .btn-success:hover {
-            background: #1e7e34;
-        }
         .btn-secondary {
             background: #6c757d;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
         }
         .btn-secondary:hover {
             background: #545b62;
@@ -87,22 +83,27 @@
             border: 1px solid #c3e6cb;
             color: #155724;
         }
-        .required {
-            color: red;
-        }
-        .form-actions {
+        .links {
             text-align: center;
-            margin-top: 30px;
+            margin-top: 20px;
+        }
+        .links a {
+            color: #007bff;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .links a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>✏️ Sửa thông tin khách hàng</h1>
+        <h1>👤 Đăng nhập</h1>
         
         <!-- Error Message -->
         <div th:if="${error}" class="alert alert-danger">
-            <span th:text="${error}">Lỗi</span>
+            <span th:text="${error}">Lỗi đăng nhập</span>
         </div>
         
         <!-- Success Message -->
@@ -110,29 +111,24 @@
             <span th:text="${success}">Thành công</span>
         </div>
 
-        <form th:action="@{'/customer/edit/' + ${customer.id}}" th:object="${customer}" method="post">
-            <input type="hidden" th:field="*{id}">
-            
+        <form th:action="@{/login}" method="post">
             <div class="form-group">
-                <label for="name">Họ và tên <span class="required">*</span>:</label>
-                <input type="text" id="name" th:field="*{name}" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
             </div>
             
             <div class="form-group">
-                <label for="email">Email <span class="required">*</span>:</label>
-                <input type="email" id="email" th:field="*{email}" required>
+                <label for="phoneNumber">Số điện thoại:</label>
+                <input type="text" id="phoneNumber" name="phoneNumber" required>
             </div>
             
-            <div class="form-group">
-                <label for="phoneNumber">Số điện thoại <span class="required">*</span>:</label>
-                <input type="text" id="phoneNumber" th:field="*{phoneNumber}" required>
-            </div>
-            
-            <div class="form-actions">
-                <button type="submit" class="btn btn-success">Cập nhật</button>
-                <a href="/customer/list" class="btn btn-secondary">Hủy</a>
-            </div>
+            <button type="submit" class="btn">Đăng nhập</button>
         </form>
+        
+        <div class="links">
+            <a href="/register">Đăng ký tài khoản mới</a>
+            <a href="/">Về trang chủ</a>
+        </div>
     </div>
 </body>
-</html>
+</html> 
