@@ -1,46 +1,325 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>In vé xem phim</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <title>Vé xem phim - In</title>
     <style>
-        .ticket {
-            max-width: 400px;
-            margin: 40px auto;
-            padding: 32px 28px 24px 28px;
+        @media print {
+            body { margin: 0; }
+            .no-print { display: none !important; }
+            .ticket { page-break-inside: avoid; }
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .print-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-            border: 2px solid #0d6efd;
-            background: #fff;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
+        
+        .ticket-header {
+            text-align: center;
+            border-bottom: 3px solid #28a745;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .cinema-name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+        
         .ticket-title {
-            text-align: center;
-            color: #0d6efd;
-            font-weight: 700;
-            margin-bottom: 18px;
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 5px;
         }
+        
+        .ticket-subtitle {
+            font-size: 1rem;
+            color: #666;
+        }
+        
         .ticket-info {
-            font-size: 1.1rem;
-            margin-bottom: 8px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
         }
-        .ticket-footer {
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #333;
+            min-width: 120px;
+        }
+        
+        .info-value {
+            color: #666;
+            text-align: right;
+        }
+        
+        .price-section {
             text-align: center;
-            margin-top: 18px;
+            background: #28a745;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .price-amount {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .price-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .qr-section {
+            text-align: center;
+            border: 2px dashed #ccc;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 10px;
+        }
+        
+        .qr-placeholder {
+            width: 100px;
+            height: 100px;
+            background: #f0f0f0;
+            border: 2px solid #ccc;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #999;
+        }
+        
+        .qr-text {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+        }
+        
+        .notice h6 {
+            margin: 0 0 10px 0;
+            font-size: 1rem;
+        }
+        
+        .notice ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .notice li {
+            margin-bottom: 5px;
+        }
+        
+        .print-button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 20px 10px;
+        }
+        
+        .print-button:hover {
+            background: #218838;
+        }
+        
+        .back-button {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 20px 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .back-button:hover {
+            background: #5a6268;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .ticket-id {
+            background: #f8f9fa;
+            border: 2px solid #28a745;
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .ticket-id-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .ticket-id-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #28a745;
         }
     </style>
 </head>
 <body>
-<div class="ticket">
-    <h2 class="ticket-title">VÉ XEM PHIM</h2>
-    <div class="ticket-info"><b>Mã vé:</b> <span th:text="${ticket.id}"></span></div>
-    <div class="ticket-info"><b>Mã suất chiếu:</b> <span th:text="${ticket.showtimeId}"></span></div>
-    <div class="ticket-info"><b>Mã ghế:</b> <span th:text="${ticket.seatId}"></span></div>
-    <div class="ticket-info"><b>Mã khách hàng:</b> <span th:text="${ticket.customerId}"></span></div>
-    <div class="ticket-info"><b>Giá vé:</b> <span th:text="${ticket.price}"></span> VND</div>
-    <div class="ticket-footer">
-        <button class="btn btn-primary" onclick="window.print()">In vé</button>
-        <a href="/" class="btn btn-secondary">Trang chủ</a>
+    <div class="print-container">
+        <!-- Print Buttons -->
+        <div class="no-print" style="text-align: center; margin-bottom: 20px;">
+            <button onclick="window.print()" class="print-button">
+                <i class="bi bi-printer"></i> In vé
+            </button>
+            <a href="javascript:history.back()" class="back-button">
+                <i class="bi bi-arrow-left"></i> Quay lại
+            </a>
+        </div>
+
+        <!-- Ticket Content -->
+        <div class="ticket">
+            <!-- Header -->
+            <div class="ticket-header">
+                <div class="cinema-name">🎬 CINEMA TICKET</div>
+                <div class="ticket-title">VÉ XEM PHIM</div>
+                <div class="ticket-subtitle">Vui lòng giữ vé này để vào rạp</div>
+            </div>
+
+            <!-- Ticket ID -->
+            <div class="ticket-id">
+                <div class="ticket-id-label">Mã vé</div>
+                <div class="ticket-id-value" th:text="${ticket != null ? ticket.id : 'N/A'}">T001</div>
+            </div>
+
+            <!-- Ticket Information -->
+            <div class="ticket-info">
+                <div class="info-row">
+                    <span class="info-label">Khách hàng:</span>
+                    <span class="info-value" th:text="${customer != null ? customer.name : 'N/A'}">Nguyễn Văn A</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Tên phim:</span>
+                    <span class="info-value" th:text="${movie != null ? movie.name : 'N/A'}">Tên phim</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Thời gian chiếu:</span>
+                    <span class="info-value" th:text="${showtime != null and showtime.startTime != null ? showtime.startTime : 'N/A'}">15/01/2024 19:00</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Phòng chiếu:</span>
+                    <span class="info-value" th:text="${room != null ? room.name : 'N/A'}">Phòng A1</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Ghế:</span>
+                    <span class="info-value" th:text="${seat != null ? seat.seatNumber : 'N/A'}">A1</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Số điện thoại:</span>
+                    <span class="info-value" th:text="${customer != null ? customer.phoneNumber : 'N/A'}">0123456789</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value" th:text="${customer != null ? customer.email : 'N/A'}">example@email.com</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="info-label">Ngày đặt vé:</span>
+                    <span class="info-value" th:text="${#dates.format(#dates.createNow(), 'dd/MM/yyyy HH:mm')}">29/06/2025 16:38</span>
+                </div>
+            </div>
+
+            <!-- Price Section -->
+            <div class="price-section">
+                <div class="price-amount">
+                    <span th:text="${ticket != null ? #numbers.formatDecimal(ticket.price, 0, 'COMMA', 0, 'POINT') : '50,000'}">50,000</span> VNĐ
+                </div>
+                <div class="price-label">Tổng tiền vé</div>
+            </div>
+
+            <!-- QR Code Section -->
+            <div class="qr-section">
+                <div class="qr-placeholder">
+                    QR
+                </div>
+                <div class="qr-text">Quét mã QR để xác nhận vé tại rạp</div>
+            </div>
+
+            <!-- Important Notice -->
+            <div class="notice">
+                <h6>⚠️ Lưu ý quan trọng:</h6>
+                <ul>
+                    <li>Vui lòng đến rạp trước giờ chiếu 15 phút</li>
+                    <li>Mang theo giấy tờ tùy thân khi vào rạp</li>
+                    <li>Vé không được hoàn lại hoặc đổi suất chiếu</li>
+                    <li>Liên hệ hotline: 1900-xxxx nếu cần hỗ trợ</li>
+                </ul>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <p>Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!</p>
+                <p>Hệ thống bán vé xem phim trực tuyến</p>
+            </div>
+        </div>
     </div>
-</div>
+
+    <script>
+        // Auto print when page loads (optional)
+        // window.onload = function() {
+        //     window.print();
+        // };
+    </script>
 </body>
 </html> 
