@@ -1,66 +1,170 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Thêm phim mới</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <meta charset="UTF-8">
+    <title>Thêm phim mới - Hệ thống bán vé xem phim</title>
     <style>
-        body { background: #f8fafc; }
-        .main-title { color: #0d6efd; font-weight: 700; margin-bottom: 32px; text-align: center; }
-        .card { max-width: 600px; margin: 40px auto; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.10); }
-        .btn-main { background: #0d6efd; color: #fff; font-weight: 600; border-radius: 8px; padding: 12px 32px; font-size: 1.1rem; }
-        .btn-main:hover { background: #0b5ed7; color: #fff; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0,123,255,0.3);
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn-success {
+            background: #28a745;
+        }
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+        .btn-secondary {
+            background: #6c757d;
+        }
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .alert-danger {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .required {
+            color: red;
+        }
+        .form-actions {
+            text-align: center;
+            margin-top: 30px;
+        }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>🎬 Thêm phim mới</h1>
+        
+        <!-- Error Message -->
+        <div th:if="${error}" class="alert alert-danger">
+            <span th:text="${error}">Lỗi</span>
+        </div>
+        
+        <!-- Success Message -->
+        <div th:if="${success}" class="alert alert-success">
+            <span th:text="${success}">Thành công</span>
+        </div>
 
-<div class="container py-5">
-    <div class="card p-4">
-        <h2 class="main-title"><i class="bi bi-plus-circle"></i> Thêm phim mới</h2>
-        <form th:action="@{/movies/add}" th:object="${movie}" method="post">
-            <div class="mb-3">
-                <label for="id" class="form-label">ID phim (có thể để trống để tự sinh)</label>
-                <input type="text" class="form-control" id="id" th:field="*{id}">
+        <form th:action="@{/movie/add}" th:object="${movie}" method="post">
+            <div class="form-group">
+                <label for="id">ID phim:</label>
+                <input type="text" id="id" th:field="*{id}" placeholder="Để trống để tự động tạo ID">
             </div>
-            <div class="mb-3">
-                <label for="name" class="form-label">Tên phim</label>
-                <input type="text" class="form-control" id="name" th:field="*{name}" required>
+            
+            <div class="form-group">
+                <label for="name">Tên phim <span class="required">*</span>:</label>
+                <input type="text" id="name" th:field="*{name}" required>
             </div>
-            <div class="mb-3">
-                <label for="title" class="form-label">Tên phim (title)</label>
-                <input type="text" class="form-control" id="title" th:field="*{title}" required>
+            
+            <div class="form-group">
+                <label for="title">Tiêu đề phim <span class="required">*</span>:</label>
+                <input type="text" id="title" th:field="*{title}" required>
             </div>
-            <div class="mb-3">
-                <label for="showTime" class="form-label">Ngày phát hành (showTime)</label>
-                <input type="text" class="form-control" id="showTime" th:field="*{showTime}" required>
+            
+            <div class="form-group">
+                <label for="genre">Thể loại <span class="required">*</span>:</label>
+                <input type="text" id="genre" th:field="*{genre}" required>
             </div>
-            <div class="mb-3">
-                <label for="dateTime" class="form-label">Ngày giờ chiếu (dateTime)</label>
-                <input type="text" class="form-control" id="dateTime" th:field="*{dateTime}" required>
+            
+            <div class="form-group">
+                <label for="duration">Thời lượng (phút) <span class="required">*</span>:</label>
+                <input type="number" id="duration" th:field="*{duration}" min="1" required>
             </div>
-            <div class="mb-3">
-                <label for="duration" class="form-label">Thời lượng (phút)</label>
-                <input type="number" class="form-control" id="duration" th:field="*{duration}" min="1" required>
+            
+            <div class="form-group">
+                <label for="age">Độ tuổi <span class="required">*</span>:</label>
+                <input type="number" id="age" th:field="*{age}" min="0" required>
             </div>
-            <div class="mb-3">
-                <label for="genre" class="form-label">Thể loại</label>
-                <input type="text" class="form-control" id="genre" th:field="*{genre}" required>
+            
+            <div class="form-group">
+                <label for="showTime">Ngày phát hành:</label>
+                <input type="text" id="showTime" th:field="*{showTime}" placeholder="VD: 2024-01-15">
             </div>
-            <div class="mb-3">
-                <label for="age" class="form-label">Độ tuổi (age)</label>
-                <input type="number" class="form-control" id="age" th:field="*{age}" min="0" required>
+            
+            <div class="form-group">
+                <label for="dateTime">Ngày giờ chiếu:</label>
+                <input type="text" id="dateTime" th:field="*{dateTime}" placeholder="VD: 2024-01-15 20:00">
             </div>
-            <div class="mb-3">
-                <label for="description" class="form-label">Mô tả</label>
-                <textarea class="form-control" id="description" th:field="*{description}" rows="3"></textarea>
+            
+            <div class="form-group">
+                <label for="description">Mô tả:</label>
+                <textarea id="description" th:field="*{description}"></textarea>
             </div>
-            <div class="d-flex justify-content-between">
-                <a href="/movies" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Quay lại</a>
-                <button type="submit" class="btn btn-main"><i class="bi bi-save"></i> Lưu phim</button>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-success">Thêm phim</button>
+                <a href="/movie/list" class="btn btn-secondary">Hủy</a>
             </div>
         </form>
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

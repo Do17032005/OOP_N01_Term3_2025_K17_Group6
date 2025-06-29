@@ -12,19 +12,19 @@ import java.util.List;
 import java.util.UUID;
 
 @Controller
+@RequestMapping("/movie")
 public class MovieController {
     
     private final MovieDAO movieDAO;
-    
+
     @Autowired
     public MovieController(MovieDAO movieDAO) {
         this.movieDAO = movieDAO;
     }
 
-    // === MOVIE LISTING ===
-    
-    @GetMapping("/movies")
-    public String getAllMovies(Model model) {
+    // === LIST MOVIES ===
+    @GetMapping("/list")
+    public String listMovie(Model model) {
         try {
             List<Movie> movies = movieDAO.getAllMovies();
             model.addAttribute("movies", movies);
@@ -35,113 +35,155 @@ public class MovieController {
         }
     }
 
-    // === MOVIE CREATION ===
-    
-    @GetMapping("/movies/add")
+    // === SHOW ADD FORM ===
+    @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("movie", new Movie());
         return "movie/add";
     }
 
-    @PostMapping("/movies/add")
-    public String addMovie(@ModelAttribute Movie movie, RedirectAttributes redirectAttributes) {
+    // === ADD MOVIE ===
+    @PostMapping("/add")
+    public String addMovie(@ModelAttribute Movie movie, 
+                          Model model, 
+                          RedirectAttributes redirectAttributes) {
         try {
-            // Validate movie data
-            if (!isValidMovie(movie)) {
-                redirectAttributes.addFlashAttribute("error", "Thông tin phim không hợp lệ!");
-                return "redirect:/movies/add";
-            }
+            // Validation using ValidationUtils
+            ValidationUtils.validateMovie(movie.getTitle(), movie.getDescription(), movie.getDuration());
             
             // Generate ID if not provided
-            if (movie.getId() == null || movie.getId().trim().isEmpty()) {
+            if (ValidationUtils.isEmpty(movie.getId())) {
                 movie.setId(UUID.randomUUID().toString());
             }
             
             movieDAO.insertMovie(movie);
-            redirectAttributes.addFlashAttribute("success", "Đã thêm phim mới. Hãy thêm suất chiếu cho phim này!");
-            return "redirect:/showtimes/add?movieId=" + movie.getId();
+            redirectAttributes.addFlashAttribute("success", "Thêm phim thành công!");
+            return "redirect:/movie/list";
+            
+        } catch (IllegalArgumentException e) {
+            // Validation error
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("movie", movie);
+            return "movie/add";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Thêm phim thất bại: " + e.getMessage());
-            return "redirect:/movies/add";
+            // System error
+            model.addAttribute("error", "Lỗi hệ thống khi thêm phim: " + e.getMessage());
+            model.addAttribute("movie", movie);
+            return "movie/add";
         }
     }
 
-    // === MOVIE EDITING ===
-    
-    @GetMapping("/movies/edit/{id}")
+    // === SHOW EDIT FORM ===
+    @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable String id, Model model, RedirectAttributes redirectAttributes) {
         try {
+            // Validate ID
+            if (!ValidationUtils.isValidId(id)) {
+                redirectAttributes.addFlashAttribute("error", "ID phim không hợp lệ!");
+                return "redirect:/movie/list";
+            }
+            
+            // Find movie by ID
             Movie movie = findMovieById(id);
             if (movie == null) {
                 redirectAttributes.addFlashAttribute("error", "Không tìm thấy phim với ID: " + id);
-                return "redirect:/movies";
+                return "redirect:/movie/list";
             }
+            
             model.addAttribute("movie", movie);
             return "movie/edit";
+            
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Không thể tải thông tin phim: " + e.getMessage());
-            return "redirect:/movies";
+            redirectAttributes.addFlashAttribute("error", "Lỗi hệ thống: " + e.getMessage());
+            return "redirect:/movie/list";
         }
     }
 
-    @PostMapping("/movies/edit")
-    public String editMovie(@ModelAttribute Movie movie, RedirectAttributes redirectAttributes) {
+    // === UPDATE MOVIE ===
+    @PostMapping("/edit/{id}")
+    public String updateMovie(@PathVariable String id, 
+                             @ModelAttribute Movie movie, 
+                             Model model, 
+                             RedirectAttributes redirectAttributes) {
         try {
-            if (!isValidMovie(movie)) {
-                redirectAttributes.addFlashAttribute("error", "Thông tin phim không hợp lệ!");
-                return "redirect:/movies/edit/" + movie.getId();
+            // Validate ID
+            if (!ValidationUtils.isValidId(id)) {
+                redirectAttributes.addFlashAttribute("error", "ID phim không hợp lệ!");
+                return "redirect:/movie/list";
+            }
+            
+            // Validate movie data
+            ValidationUtils.validateMovie(movie.getTitle(), movie.getDescription(), movie.getDuration());
+            
+            // Set ID from path
+            movie.setId(id);
+            
+            // Check if movie exists
+            Movie existingMovie = findMovieById(id);
+            if (existingMovie == null) {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy phim để cập nhật!");
+                return "redirect:/movie/list";
             }
             
             movieDAO.updateMovie(movie);
             redirectAttributes.addFlashAttribute("success", "Cập nhật phim thành công!");
+            return "redirect:/movie/list";
+            
+        } catch (IllegalArgumentException e) {
+            // Validation error
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("movie", movie);
+            return "movie/edit";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Cập nhật phim thất bại: " + e.getMessage());
+            // System error
+            model.addAttribute("error", "Lỗi hệ thống khi cập nhật phim: " + e.getMessage());
+            model.addAttribute("movie", movie);
+            return "movie/edit";
         }
-        return "redirect:/movies";
     }
 
-    // === MOVIE DELETION ===
-    
-    @GetMapping("/movies/delete/{id}")
+    // === DELETE MOVIE ===
+    @PostMapping("/delete/{id}")
     public String deleteMovie(@PathVariable String id, RedirectAttributes redirectAttributes) {
         try {
-            Movie movie = findMovieById(id);
-            if (movie == null) {
+            // Validate ID
+            if (!ValidationUtils.isValidId(id)) {
+                redirectAttributes.addFlashAttribute("error", "ID phim không hợp lệ!");
+                return "redirect:/movie/list";
+            }
+            
+            // Check if movie exists
+            Movie existingMovie = findMovieById(id);
+            if (existingMovie == null) {
                 redirectAttributes.addFlashAttribute("error", "Không tìm thấy phim để xóa!");
-                return "redirect:/movies";
+                return "redirect:/movie/list";
             }
             
             movieDAO.deleteMovie(id);
             redirectAttributes.addFlashAttribute("success", "Xóa phim thành công!");
+            return "redirect:/movie/list";
+            
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Xóa phim thất bại: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Lỗi hệ thống khi xóa phim: " + e.getMessage());
+            return "redirect:/movie/list";
         }
-        return "redirect:/movies";
-    }
-
-    // === ERROR HANDLING ===
-    
-    @GetMapping("/movies/edit")
-    public String redirectEditNoId(RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("error", "Bạn phải chọn phim để sửa!");
-        return "redirect:/movies";
     }
 
     // === PRIVATE HELPER METHODS ===
     
+    /**
+     * Tìm movie theo ID
+     * Note: MovieDAO chưa có method getMovieById, nên phải filter từ getAllMovies
+     */
     private Movie findMovieById(String id) {
-        return movieDAO.getAllMovies().stream()
-            .filter(m -> m.getId().equals(id))
-            .findFirst()
-            .orElse(null);
-    }
-    
-    private boolean isValidMovie(Movie movie) {
-        return movie != null && 
-               movie.getName() != null && !movie.getName().trim().isEmpty() &&
-               movie.getTitle() != null && !movie.getTitle().trim().isEmpty() &&
-               movie.getGenre() != null && !movie.getGenre().trim().isEmpty() &&
-               movie.getDuration() > 0 &&
-               movie.getAge() >= 0;
+        try {
+            List<Movie> movies = movieDAO.getAllMovies();
+            return movies.stream()
+                .filter(m -> m.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi tìm kiếm phim: " + e.getMessage(), e);
+        }
     }
 }

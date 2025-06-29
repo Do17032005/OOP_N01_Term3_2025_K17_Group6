@@ -9,21 +9,22 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.UUID;
 
 @Controller
+@RequestMapping("/room")
 public class RoomController {
     
     private final RoomDAO roomDAO;
-    
+
     @Autowired
     public RoomController(RoomDAO roomDAO) {
         this.roomDAO = roomDAO;
     }
 
-    // === ROOM LISTING ===
-    
-    @GetMapping("/rooms")
-    public String getAllRooms(Model model) {
+    // === LIST ROOMS ===
+    @GetMapping("/list")
+    public String listRoom(Model model) {
         try {
             List<Room> rooms = roomDAO.getAllRooms();
             model.addAttribute("rooms", rooms);
@@ -34,95 +35,155 @@ public class RoomController {
         }
     }
 
-    // === ROOM CREATION ===
-    
-    @GetMapping("/rooms/add")
+    // === SHOW ADD FORM ===
+    @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("room", new Room());
         return "room/add";
     }
 
-    @PostMapping("/rooms/add")
-    public String addRoom(@ModelAttribute Room room, RedirectAttributes redirectAttributes) {
+    // === ADD ROOM ===
+    @PostMapping("/add")
+    public String addRoom(@ModelAttribute Room room, 
+                         Model model, 
+                         RedirectAttributes redirectAttributes) {
         try {
-            if (!isValidRoom(room)) {
-                redirectAttributes.addFlashAttribute("error", "Thông tin phòng không hợp lệ!");
-                return "redirect:/rooms/add";
+            // Validation using ValidationUtils
+            ValidationUtils.validateRoom(room.getName(), room.getTotalSeats());
+            
+            // Generate ID if not provided
+            if (ValidationUtils.isEmpty(room.getId())) {
+                room.setId(UUID.randomUUID().toString());
             }
             
             roomDAO.insertRoom(room);
             redirectAttributes.addFlashAttribute("success", "Thêm phòng thành công!");
+            return "redirect:/room/list";
+            
+        } catch (IllegalArgumentException e) {
+            // Validation error
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("room", room);
+            return "room/add";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Thêm phòng thất bại: " + e.getMessage());
+            // System error
+            model.addAttribute("error", "Lỗi hệ thống khi thêm phòng: " + e.getMessage());
+            model.addAttribute("room", room);
+            return "room/add";
         }
-        return "redirect:/rooms";
     }
 
-    // === ROOM EDITING ===
-    
-    @GetMapping("/rooms/edit/{id}")
+    // === SHOW EDIT FORM ===
+    @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable String id, Model model, RedirectAttributes redirectAttributes) {
         try {
+            // Validate ID
+            if (!ValidationUtils.isValidId(id)) {
+                redirectAttributes.addFlashAttribute("error", "ID phòng không hợp lệ!");
+                return "redirect:/room/list";
+            }
+            
+            // Find room by ID
             Room room = findRoomById(id);
             if (room == null) {
                 redirectAttributes.addFlashAttribute("error", "Không tìm thấy phòng với ID: " + id);
-                return "redirect:/rooms";
+                return "redirect:/room/list";
             }
+            
             model.addAttribute("room", room);
             return "room/edit";
+            
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Không thể tải thông tin phòng: " + e.getMessage());
-            return "redirect:/rooms";
+            redirectAttributes.addFlashAttribute("error", "Lỗi hệ thống: " + e.getMessage());
+            return "redirect:/room/list";
         }
     }
 
-    @PostMapping("/rooms/edit")
-    public String editRoom(@ModelAttribute Room room, RedirectAttributes redirectAttributes) {
+    // === UPDATE ROOM ===
+    @PostMapping("/edit/{id}")
+    public String updateRoom(@PathVariable String id, 
+                            @ModelAttribute Room room, 
+                            Model model, 
+                            RedirectAttributes redirectAttributes) {
         try {
-            if (!isValidRoom(room)) {
-                redirectAttributes.addFlashAttribute("error", "Thông tin phòng không hợp lệ!");
-                return "redirect:/rooms/edit/" + room.getId();
+            // Validate ID
+            if (!ValidationUtils.isValidId(id)) {
+                redirectAttributes.addFlashAttribute("error", "ID phòng không hợp lệ!");
+                return "redirect:/room/list";
+            }
+            
+            // Validate room data
+            ValidationUtils.validateRoom(room.getName(), room.getTotalSeats());
+            
+            // Set ID from path
+            room.setId(id);
+            
+            // Check if room exists
+            Room existingRoom = findRoomById(id);
+            if (existingRoom == null) {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy phòng để cập nhật!");
+                return "redirect:/room/list";
             }
             
             roomDAO.updateRoom(room);
             redirectAttributes.addFlashAttribute("success", "Cập nhật phòng thành công!");
+            return "redirect:/room/list";
+            
+        } catch (IllegalArgumentException e) {
+            // Validation error
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("room", room);
+            return "room/edit";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Cập nhật phòng thất bại: " + e.getMessage());
+            // System error
+            model.addAttribute("error", "Lỗi hệ thống khi cập nhật phòng: " + e.getMessage());
+            model.addAttribute("room", room);
+            return "room/edit";
         }
-        return "redirect:/rooms";
     }
 
-    // === ROOM DELETION ===
-    
-    @GetMapping("/rooms/delete/{id}")
+    // === DELETE ROOM ===
+    @PostMapping("/delete/{id}")
     public String deleteRoom(@PathVariable String id, RedirectAttributes redirectAttributes) {
         try {
-            Room room = findRoomById(id);
-            if (room == null) {
+            // Validate ID
+            if (!ValidationUtils.isValidId(id)) {
+                redirectAttributes.addFlashAttribute("error", "ID phòng không hợp lệ!");
+                return "redirect:/room/list";
+            }
+            
+            // Check if room exists
+            Room existingRoom = findRoomById(id);
+            if (existingRoom == null) {
                 redirectAttributes.addFlashAttribute("error", "Không tìm thấy phòng để xóa!");
-                return "redirect:/rooms";
+                return "redirect:/room/list";
             }
             
             roomDAO.deleteRoom(id);
             redirectAttributes.addFlashAttribute("success", "Xóa phòng thành công!");
+            return "redirect:/room/list";
+            
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Xóa phòng thất bại: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Lỗi hệ thống khi xóa phòng: " + e.getMessage());
+            return "redirect:/room/list";
         }
-        return "redirect:/rooms";
     }
 
     // === PRIVATE HELPER METHODS ===
     
+    /**
+     * Tìm room theo ID
+     * Note: RoomDAO chưa có method getRoomById, nên phải filter từ getAllRooms
+     */
     private Room findRoomById(String id) {
-        return roomDAO.getAllRooms().stream()
-            .filter(r -> r.getId().equals(id))
-            .findFirst()
-            .orElse(null);
+        try {
+            List<Room> rooms = roomDAO.getAllRooms();
+            return rooms.stream()
+                .filter(r -> r.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi tìm kiếm phòng: " + e.getMessage(), e);
+        }
     }
-    
-    private boolean isValidRoom(Room room) {
-        return room != null && 
-               room.getName() != null && !room.getName().trim().isEmpty() &&
-               room.getTotalSeats() > 0;
-    }
-} 
+}

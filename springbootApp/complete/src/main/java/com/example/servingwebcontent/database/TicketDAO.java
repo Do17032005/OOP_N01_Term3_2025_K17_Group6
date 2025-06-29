@@ -78,6 +78,7 @@ public class TicketDAO {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("Lỗi khi thêm vé vào database: " + e.getMessage(), e);
         } finally {
             if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
         }
@@ -101,6 +102,34 @@ public class TicketDAO {
         } finally {
             if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
         }
+    }
+
+    public Ticket getTicketById(String id) {
+        Connection conn = null;
+        try {
+            conn = AivenConnection.getConnection();
+            String sql = "SELECT * FROM Ticket WHERE id=?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return new Ticket(
+                            rs.getString("id"),
+                            rs.getString("showtimeId"),
+                            rs.getString("seatId"),
+                            rs.getString("customerId"),
+                            rs.getDouble("price")
+                        );
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
+        }
+        return null;
+        
     }
 
     public void deleteTicket(String id) {

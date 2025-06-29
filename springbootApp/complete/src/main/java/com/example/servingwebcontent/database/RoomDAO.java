@@ -47,10 +47,37 @@ public class RoomDAO {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("Lỗi khi thêm phòng vào database: " + e.getMessage(), e);
         } finally {
             if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
         }
     }
+
+    public Room getRoomById(String id) {
+        Connection conn = null;
+        try {
+            conn = AivenConnection.getConnection();
+            String sql = "SELECT * FROM Room WHERE id=?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return new Room(
+                            rs.getString("id"),
+                            rs.getString("name"),
+                            rs.getInt("totalSeats")
+                        );
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
+        }
+        return null;
+    }
+
 
     public void updateRoom(Room room) {
         Connection conn = null;

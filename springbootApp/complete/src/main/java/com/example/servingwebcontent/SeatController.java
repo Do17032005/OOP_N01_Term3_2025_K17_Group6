@@ -1,7 +1,9 @@
 package com.example.servingwebcontent;
 
 import com.example.servingwebcontent.database.SeatDAO;
+import com.example.servingwebcontent.database.RoomDAO;
 import com.example.servingwebcontent.model.Seat;
+import com.example.servingwebcontent.model.Room;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,19 +13,21 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 
 @Controller
+@RequestMapping("/seat")
 public class SeatController {
     
     private final SeatDAO seatDAO;
+    private final RoomDAO roomDAO;
     
     @Autowired
-    public SeatController(SeatDAO seatDAO) {
+    public SeatController(SeatDAO seatDAO, RoomDAO roomDAO) {
         this.seatDAO = seatDAO;
+        this.roomDAO = roomDAO;
     }
 
-    // === SEAT LISTING ===
-    
-    @GetMapping("/seats")
-    public String getAllSeats(Model model) {
+    // === LIST SEATS ===
+    @GetMapping("/list")
+    public String listSeats(Model model) {
         try {
             List<Seat> seats = seatDAO.getAllSeats();
             model.addAttribute("seats", seats);
@@ -34,95 +38,90 @@ public class SeatController {
         }
     }
 
-    // === SEAT CREATION ===
-    
-    @GetMapping("/seats/add")
+    // === ADD SEAT ===
+    @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("seat", new Seat());
+        model.addAttribute("rooms", roomDAO.getAllRooms());
         return "seat/add";
     }
 
-    @PostMapping("/seats/add")
-    public String addSeat(@ModelAttribute Seat seat, RedirectAttributes redirectAttributes) {
+    @PostMapping("/add")
+    public String addSeat(@ModelAttribute Seat seat, Model model, RedirectAttributes redirectAttributes) {
         try {
-            if (!isValidSeat(seat)) {
-                redirectAttributes.addFlashAttribute("error", "Thông tin ghế không hợp lệ!");
-                return "redirect:/seats/add";
+            if (seat.getId() == null || seat.getId().trim().isEmpty()) {
+                seat.setId(java.util.UUID.randomUUID().toString());
             }
-            
             seatDAO.insertSeat(seat);
             redirectAttributes.addFlashAttribute("success", "Thêm ghế thành công!");
+            return "redirect:/seat/list";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Thêm ghế thất bại: " + e.getMessage());
+            model.addAttribute("errorMessage", "Thêm ghế thất bại: " + e.getMessage());
+            model.addAttribute("seat", seat);
+            model.addAttribute("rooms", roomDAO.getAllRooms());
+            return "seat/add";
         }
-        return "redirect:/seats";
     }
-
-    // === SEAT EDITING ===
     
-    @GetMapping("/seats/edit/{id}")
+    // === EDIT SEAT ===
+    @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable String id, Model model, RedirectAttributes redirectAttributes) {
         try {
-            Seat seat = findSeatById(id);
+            Seat seat = seatDAO.getSeatById(id);
             if (seat == null) {
-                redirectAttributes.addFlashAttribute("error", "Không tìm thấy ghế với ID: " + id);
-                return "redirect:/seats";
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy ghế!");
+                return "redirect:/seat/list";
             }
             model.addAttribute("seat", seat);
+            model.addAttribute("rooms", roomDAO.getAllRooms());
             return "seat/edit";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Không thể tải thông tin ghế: " + e.getMessage());
-            return "redirect:/seats";
+            return "redirect:/seat/list";
         }
     }
 
-    @PostMapping("/seats/edit")
-    public String editSeat(@ModelAttribute Seat seat, RedirectAttributes redirectAttributes) {
+    @PostMapping("/edit/{id}")
+    public String updateSeat(@PathVariable String id, @ModelAttribute Seat seat, Model model, RedirectAttributes redirectAttributes) {
         try {
-            if (!isValidSeat(seat)) {
-                redirectAttributes.addFlashAttribute("error", "Thông tin ghế không hợp lệ!");
-                return "redirect:/seats/edit/" + seat.getId();
-            }
-            
+            seat.setId(id);
             seatDAO.updateSeat(seat);
             redirectAttributes.addFlashAttribute("success", "Cập nhật ghế thành công!");
+            return "redirect:/seat/list";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Cập nhật ghế thất bại: " + e.getMessage());
+            model.addAttribute("errorMessage", "Cập nhật ghế thất bại: " + e.getMessage());
+            model.addAttribute("seat", seat);
+            model.addAttribute("rooms", roomDAO.getAllRooms());
+            return "seat/edit";
         }
-        return "redirect:/seats";
     }
 
-    // === SEAT DELETION ===
-    
-    @GetMapping("/seats/delete/{id}")
+    // === DELETE SEAT ===
+    @GetMapping("/delete/{id}")
+    public String showDeleteConfirmation(@PathVariable String id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Seat seat = seatDAO.getSeatById(id);
+            if (seat == null) {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy ghế!");
+                return "redirect:/seat/list";
+            }
+            model.addAttribute("seat", seat);
+            return "seat/delete";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Không thể tải thông tin ghế: " + e.getMessage());
+            return "redirect:/seat/list";
+        }
+    }
+
+    @PostMapping("/delete/{id}")
     public String deleteSeat(@PathVariable String id, RedirectAttributes redirectAttributes) {
         try {
-            Seat seat = findSeatById(id);
-            if (seat == null) {
-                redirectAttributes.addFlashAttribute("error", "Không tìm thấy ghế để xóa!");
-                return "redirect:/seats";
-            }
-            
             seatDAO.deleteSeat(id);
             redirectAttributes.addFlashAttribute("success", "Xóa ghế thành công!");
+            return "redirect:/seat/list";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Xóa ghế thất bại: " + e.getMessage());
+            return "redirect:/seat/list";
         }
-        return "redirect:/seats";
-    }
-
-    // === PRIVATE HELPER METHODS ===
-    
-    private Seat findSeatById(String id) {
-        return seatDAO.getAllSeats().stream()
-            .filter(s -> s.getId().equals(id))
-            .findFirst()
-            .orElse(null);
-    }
-    
-    private boolean isValidSeat(Seat seat) {
-        return seat != null && 
-               seat.getSeatNumber() != null && !seat.getSeatNumber().trim().isEmpty() &&
-               seat.getRoomId() != null && !seat.getRoomId().trim().isEmpty();
     }
 } 

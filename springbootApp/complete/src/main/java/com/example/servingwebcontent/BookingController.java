@@ -21,15 +21,17 @@ public class BookingController {
     private final SeatDAO seatDAO;
     private final TicketDAO ticketDAO;
     private final CustomerDAO customerDAO;
+    private final RoomDAO roomDAO;
     
     @Autowired
     public BookingController(MovieDAO movieDAO, ShowtimeDAO showtimeDAO, 
-                           SeatDAO seatDAO, TicketDAO ticketDAO, CustomerDAO customerDAO) {
+                           SeatDAO seatDAO, TicketDAO ticketDAO, CustomerDAO customerDAO, RoomDAO roomDAO) {
         this.movieDAO = movieDAO;
         this.showtimeDAO = showtimeDAO;
         this.seatDAO = seatDAO;
         this.ticketDAO = ticketDAO;
         this.customerDAO = customerDAO;
+        this.roomDAO = roomDAO;
     }
 
     // === MOVIE SELECTION ===
@@ -83,15 +85,35 @@ public class BookingController {
     @GetMapping("/seats")
     public String selectSeat(@RequestParam String showtimeId, Model model, HttpSession session, RedirectAttributes redirectAttributes) {
         try {
+            System.out.println("=== DEBUG: Seats method called with showtimeId: " + showtimeId);
+            
             if (showtimeId == null || showtimeId.trim().isEmpty()) {
                 redirectAttributes.addFlashAttribute("error", "Vui lòng chọn suất chiếu!");
                 return "redirect:/booking/movies";
             }
             
-            List<Seat> allSeats = seatDAO.getAllSeats();
+            // Get showtime to find room
+            Showtime showtime = showtimeDAO.getShowtimeById(showtimeId);
+            System.out.println("=== DEBUG: Found showtime: " + showtime);
+            
+            if (showtime == null) {
+                redirectAttributes.addFlashAttribute("error", "Suất chiếu không tồn tại!");
+                return "redirect:/booking/movies";
+            }
+            
+            // Get room information
+            Room room = roomDAO.getRoomById(showtime.getRoomId());
+            System.out.println("=== DEBUG: Found room: " + room);
+            
+            List<Seat> allSeats = seatDAO.getAllSeats().stream()
+                .filter(seat -> seat.getRoomId().equals(showtime.getRoomId()))
+                .collect(Collectors.toList());
+            System.out.println("=== DEBUG: All seats for room " + showtime.getRoomId() + ": " + allSeats.size());
+                
             List<Ticket> tickets = ticketDAO.getAllTickets().stream()
                 .filter(t -> t.getShowtimeId().equals(showtimeId))
                 .collect(Collectors.toList());
+            System.out.println("=== DEBUG: Booked tickets for showtime: " + tickets.size());
                 
             Set<String> bookedSeatIds = tickets.stream()
                 .map(Ticket::getSeatId)
@@ -100,16 +122,20 @@ public class BookingController {
             List<Seat> availableSeats = allSeats.stream()
                 .filter(seat -> !bookedSeatIds.contains(seat.getId()))
                 .collect(Collectors.toList());
+            System.out.println("=== DEBUG: Available seats: " + availableSeats.size());
                 
             if (availableSeats.isEmpty()) {
                 model.addAttribute("error", "Không còn ghế trống cho suất chiếu này!");
             }
             
             model.addAttribute("seats", availableSeats);
+            model.addAttribute("roomInfo", room);
             model.addAttribute("showtimeId", showtimeId);
             model.addAttribute("loggedInCustomer", session.getAttribute("loggedInCustomer"));
             return "booking/seats";
         } catch (Exception e) {
+            System.out.println("=== DEBUG: Exception in seats method: " + e.getMessage());
+            e.printStackTrace();
             redirectAttributes.addFlashAttribute("error", "Không thể tải danh sách ghế: " + e.getMessage());
             return "redirect:/booking/movies";
         }
@@ -160,18 +186,60 @@ public class BookingController {
                 return "redirect:/booking/seats?showtimeId=" + showtimeId;
             }
             
-            // Save customer if not exists
-            if (customer.getId() == null || customer.getId().trim().isEmpty()) {
-                customer.setId(UUID.randomUUID().toString());
+            // Get showtime and movie information
+            Showtime showtime = showtimeDAO.getShowtimeById(showtimeId);
+            if (showtime == null) {
+                redirectAttributes.addFlashAttribute("error", "Suất chiếu không tồn tại!");
+                return "redirect:/booking/movies";
             }
-            customerDAO.insertCustomer(customer);
+            
+            Movie movie = movieDAO.getMovieById(showtime.getMovieId());
+            if (movie == null) {
+                redirectAttributes.addFlashAttribute("error", "Thông tin phim không tồn tại!");
+                return "redirect:/booking/movies";
+            }
+            
+            // Get seat information
+            Seat seat = seatDAO.getSeatById(seatId);
+            if (seat == null) {
+                redirectAttributes.addFlashAttribute("error", "Thông tin ghế không tồn tại!");
+                return "redirect:/booking/seats?showtimeId=" + showtimeId;
+            }
+            
+            // Get room information
+            Room room = roomDAO.getRoomById(showtime.getRoomId());
+            
+            // Check if customer already exists by email
+            Customer existingCustomer = customerDAO.getAllCustomers().stream()
+                .filter(c -> c.getEmail().equals(customer.getEmail()))
+                .findFirst()
+                .orElse(null);
+            
+            Customer finalCustomer;
+            if (existingCustomer != null) {
+                // Use existing customer
+                finalCustomer = existingCustomer;
+            } else {
+                // Save new customer
+                if (customer.getId() == null || customer.getId().trim().isEmpty()) {
+                    customer.setId(UUID.randomUUID().toString());
+                }
+                customerDAO.insertCustomer(customer);
+                finalCustomer = customer;
+            }
             
             // Create ticket
-            Ticket ticket = new Ticket(UUID.randomUUID().toString(), showtimeId, seatId, customer.getId(), 50000);
+            Ticket ticket = new Ticket(UUID.randomUUID().toString(), showtimeId, seatId, finalCustomer.getId(), 50000);
             ticketDAO.insertTicket(ticket);
             
+            // Add all information to model
             model.addAttribute("ticket", ticket);
-            model.addAttribute("customer", customer);
+            model.addAttribute("customer", finalCustomer);
+            model.addAttribute("showtime", showtime);
+            model.addAttribute("movie", movie);
+            model.addAttribute("seat", seat);
+            model.addAttribute("room", room);
+            
             return "booking/success";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Đặt vé thất bại: " + e.getMessage());

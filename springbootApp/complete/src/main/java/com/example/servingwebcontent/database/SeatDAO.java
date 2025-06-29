@@ -47,11 +47,37 @@ public class SeatDAO {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("Lỗi khi thêm ghế vào database: " + e.getMessage(), e);
         } finally {
             if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
         }
     }
 
+    public Seat getSeatById(String id) {
+        Connection conn = null;
+        try {
+            conn = AivenConnection.getConnection();
+            String sql = "SELECT * FROM Seat WHERE id=?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return new Seat(
+                            rs.getString("id"),
+                            rs.getString("roomId"),
+                            rs.getString("seatNumber")
+                        );
+                    }
+                }
+            }
+        } catch (Exception e) { 
+            e.printStackTrace();
+        } finally {
+            if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
+        }
+        return null;
+    }
+    
     public void updateSeat(Seat seat) {
         Connection conn = null;
         try {

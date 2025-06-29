@@ -49,7 +49,7 @@ public class CustomerDAO {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.print("loi khi them khach hang");
+            throw new RuntimeException("Lỗi khi thêm khách hàng vào database: " + e.getMessage(), e);
         } finally {
             if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
         }
@@ -73,6 +73,33 @@ public class CustomerDAO {
         } finally {
             if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
         }
+    }
+
+    public Customer getCustomerById(String id) {
+        Connection conn = null;
+        try {
+            conn = AivenConnection.getConnection();
+            String sql = "SELECT * FROM Customer WHERE id=?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return new Customer(
+                            rs.getString("id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("phoneNumber")
+                        );
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.print("loi khi lay khach hang theo id");
+        } finally {
+            if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
+        }
+        return null;
     }
 
     public void deleteCustomer(String id) {

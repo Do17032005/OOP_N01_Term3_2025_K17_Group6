@@ -57,9 +57,40 @@ public class MovieDAO {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("Lỗi khi thêm phim vào database: " + e.getMessage(), e);
         } finally {
             if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
         }
+    }
+
+    public Movie getMovieById(String id) {
+        Connection conn = null;
+        try {
+            conn = AivenConnection.getConnection();
+            String sql = "SELECT * FROM Movie WHERE id=?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return new Movie(
+                            rs.getString("id"),
+                            rs.getString("name"),
+                            rs.getString("title"),
+                            rs.getString("showTime"),
+                            rs.getString("dateTime"),
+                            rs.getInt("duration"),
+                            rs.getString("genre"),
+                            rs.getInt("age")
+                        );
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
+        }
+        return null;
     }
 
     public void updateMovie(Movie m) {

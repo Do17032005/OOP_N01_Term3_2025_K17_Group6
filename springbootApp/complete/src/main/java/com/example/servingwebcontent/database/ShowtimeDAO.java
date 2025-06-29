@@ -49,9 +49,37 @@ public class ShowtimeDAO {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            throw new RuntimeException("Lỗi khi thêm suất chiếu vào database: " + e.getMessage(), e);
         } finally {
             if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
         }
+    }
+
+    public Showtime getShowtimeById(String id) {
+        Connection conn = null;
+        try {
+            conn = AivenConnection.getConnection();
+            String sql = "SELECT * FROM Showtime WHERE id=?";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return new Showtime(
+                            rs.getString("id"),
+                            rs.getString("movieId"),
+                            rs.getString("roomId"),
+                            rs.getTimestamp("startTime").toLocalDateTime()
+                        );
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (conn != null) try { conn.close(); } catch (SQLException ignore) {}
+        }
+        return null;
+        
     }
 
     public void updateShowtime(Showtime st) {

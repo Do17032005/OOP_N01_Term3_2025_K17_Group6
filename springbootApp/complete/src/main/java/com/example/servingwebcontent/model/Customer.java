@@ -8,8 +8,8 @@ public class Customer extends ObjectGeneral {
         super("", "");
         this.email = "";
         this.phoneNumber = "";
-        
     }
+    
     // Constructor
     public Customer(String id, String name, String email, String phoneNumber) {
         super(id, name);
@@ -43,7 +43,6 @@ public class Customer extends ObjectGeneral {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-    
 
     // Phương thức hiển thị thông tin
     public void displayInfo() {
