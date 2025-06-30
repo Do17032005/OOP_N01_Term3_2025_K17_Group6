@@ -105,13 +105,13 @@
         <h1>📝 Đăng ký tài khoản</h1>
         
         <!-- Error Message -->
-        <div th:if="${error}" class="alert alert-danger">
-            <span th:text="${error}">Lỗi đăng ký</span>
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <span th:text="${errorMessage}">Lỗi đăng ký</span>
         </div>
         
         <!-- Success Message -->
-        <div th:if="${success}" class="alert alert-success">
-            <span th:text="${success}">Thành công</span>
+        <div th:if="${successMessage}" class="alert alert-success">
+            <span th:text="${successMessage}">Thành công</span>
         </div>
 
         <form th:action="@{/register}" th:object="${customer}" method="post">
@@ -136,6 +136,7 @@
         <div class="links">
             <a href="/login">Đã có tài khoản? Đăng nhập</a>
             <a href="/">Về trang chủ</a>
+            <a th:if="${session.loggedInCustomer != null}" href="/logout">Đăng xuất</a>
         </div>
     </div>
 </body>
