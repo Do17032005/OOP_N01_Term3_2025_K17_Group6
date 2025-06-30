@@ -293,19 +293,13 @@ springbootApp/complete/
 ## Hình ảnh & sơ đồ
 
 ### 1. Class Diagram
-![Class Diagram](cd.jpg)
+![Class Diagram](IMG/cd.jpg)
 
 ### 2. Activity Diagram
-![Activity Diagram](https://github.com/Rumnn/resource/blob/main/activitydiagram.jpg)
+![Activity Diagram](IMG/ad.jpg)
 
 ### 3. Lưu đồ thuật toán
-![Lưu đồ thuật toán](https://github.com/Rumnn/resource/blob/main/LuuDoThuatToan.jpg)
-
-### 4. Giao diện thêm phim
-![UI thêm phim](https://github.com/Do17032005/IMG/blob/main/UI%20nh%E1%BA%ADp%20phim.png)
-
-### 5. UI vé sắp chiếu
-![UI vé sắp chiếu](https://github.com/Rumnn/resource/blob/main/upcoming.PNG)
+![Lưu đồ thuật toán](IMG/ldtt.jpg)
 
 ---
 
