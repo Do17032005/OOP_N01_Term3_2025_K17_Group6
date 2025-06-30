@@ -293,7 +293,7 @@ springbootApp/complete/
 ## Hình ảnh & sơ đồ
 
 ### 1. Class Diagram
-![Class Diagram](nd2.jpg)
+![Class Diagram](cd.jpg)
 
 ### 2. Activity Diagram
 ![Activity Diagram](https://github.com/Rumnn/resource/blob/main/activitydiagram.jpg)
