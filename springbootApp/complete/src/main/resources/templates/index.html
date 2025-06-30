@@ -82,11 +82,11 @@
         <h1>🎬 Hệ thống bán vé xem phim</h1>
         
         <!-- Flash Messages -->
-        <div th:if="${success}" class="alert alert-success">
-            <span th:text="${success}">Thành công</span>
+        <div th:if="${successMessage}" class="alert alert-success">
+            <span th:text="${successMessage}">Thành công</span>
         </div>
-        <div th:if="${error}" class="alert alert-danger">
-            <span th:text="${error}">Lỗi</span>
+        <div th:if="${errorMessage}" class="alert alert-danger">
+            <span th:text="${errorMessage}">Lỗi</span>
         </div>
 
         <!-- Main Menu -->
@@ -101,14 +101,19 @@
                 <p>Tra cứu thông tin vé</p>
             </a>
             
-            <a href="/login" class="menu-item">
+            <a href="/login" class="menu-item" th:if="${session.loggedInCustomer == null}">
                 <h3>👤 Đăng nhập</h3>
                 <p>Đăng nhập vào hệ thống</p>
             </a>
             
-            <a href="/register" class="menu-item">
+            <a href="/register" class="menu-item" th:if="${session.loggedInCustomer == null}">
                 <h3>📝 Đăng ký</h3>
                 <p>Đăng ký tài khoản mới</p>
+            </a>
+            
+            <a href="/logout" class="menu-item" th:if="${session.loggedInCustomer != null}">
+                <h3>🚪 Đăng xuất</h3>
+                <p>Thoát khỏi tài khoản</p>
             </a>
         </div>
 
