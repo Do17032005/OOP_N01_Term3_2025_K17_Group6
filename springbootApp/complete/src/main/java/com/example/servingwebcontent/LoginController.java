@@ -70,7 +70,7 @@ public class LoginController {
             redirectAttributes.addFlashAttribute("successMessage", 
                 "Đăng nhập thành công! Xin chào " + customer.getName());
             
-            return "redirect:/";
+            return "redirect:/index";
 
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Lỗi hệ thống: " + e.getMessage());
@@ -83,7 +83,7 @@ public class LoginController {
     public String logout(HttpSession session, RedirectAttributes redirectAttributes) {
         session.invalidate();
         redirectAttributes.addFlashAttribute("successMessage", "Đăng xuất thành công!");
-        return "redirect:/login";
+        return "redirect:/";
     }
 
     // === LOGIN FORM INNER CLASS ===

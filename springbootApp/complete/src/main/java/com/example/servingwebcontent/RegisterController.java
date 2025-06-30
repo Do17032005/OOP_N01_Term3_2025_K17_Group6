@@ -23,6 +23,11 @@ public class RegisterController {
         this.customerDAO = customerDAO;
     }
 
+        @GetMapping("/index")
+    public String showHomePage(Model model, HttpSession session) {
+        return "index";
+    }
+
     // === SHOW REGISTER PAGE ===
     @GetMapping("/register")
     public String showRegisterPage(Model model, HttpSession session) {
