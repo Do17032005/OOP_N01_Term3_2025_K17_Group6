@@ -312,5 +312,5 @@ springbootApp/complete/
 ## Liên kết
 
 - [GitHub Repository](https://github.com/Do17032005/OOP_N01_Term3_2025_K17_Group6)
-- [README.md trên GitHub](https://github.com/Do17032005/OOP_N01_Term3_2025_K17_Group6/edit/main/README.md)
+- [README.md trên GitHub](https://github.com/Do17032005/OOP_N01_Term3_2025_K17_Group6/blob/Main/README.md)
 
