@@ -133,40 +133,101 @@
 
 ```
 springbootApp/complete/
-├── src/main/java/com/example/servingwebcontent/
-│   ├── model/                    # Các lớp model
-│   │   ├── ObjectGeneral.java    # Lớp cơ sở
-│   │   ├── ObjectList.java       # Lớp quản lý danh sách
-│   │   ├── Movie.java           # Model phim
-│   │   ├── Customer.java        # Model khách hàng
-│   │   ├── Room.java            # Model phòng
-│   │   ├── Showtime.java        # Model suất chiếu
-│   │   ├── Seat.java            # Model ghế
-│   │   ├── Ticket.java          # Model vé
-│   │   ├── MovieList.java       # Quản lý danh sách phim
-│   │   ├── CustomerList.java    # Quản lý danh sách khách hàng
-│   │   └── TicketList.java      # Quản lý danh sách vé
-│   ├── database/                 # Lớp truy cập dữ liệu
-│   │   ├── AivenConnection.java  # Kết nối database
-│   │   ├── MovieDAO.java        # DAO phim
-│   │   ├── CustomerDAO.java     # DAO khách hàng
-│   │   ├── RoomDAO.java         # DAO phòng
-│   │   ├── SeatDAO.java         # DAO ghế
-│   │   ├── ShowtimeDAO.java     # DAO suất chiếu
-│   │   └── TicketDAO.java       # DAO vé
-│   ├── *Controller.java          # Các controller
-│   └── ServingWebContentApplication.java
-├── src/main/resources/
-│   ├── templates/               # Thymeleaf templates
-│   │   ├── fragments/           # Template fragments
-│   │   ├── add-*.html          # Form thêm mới
-│   │   ├── edit-*.html         # Form chỉnh sửa
-│   │   ├── *-list.html         # Trang danh sách
-│   │   ├── booking-*.html      # Trang đặt vé
-│   │   └── ticket-*.html       # Trang vé
-│   └── static/                  # Static resources
-└── pom.xml                      # Maven configuration
+├── src/
+│   ├── main/
+│   │   ├── java/com/example/servingwebcontent/
+│   │   │   ├── model/                    # Các lớp model
+│   │   │   │   ├── ObjectGeneral.java    # Lớp cơ sở cho tất cả đối tượng
+│   │   │   │   ├── ObjectList.java       # Lớp generic quản lý danh sách
+│   │   │   │   ├── Movie.java           # Model phim
+│   │   │   │   ├── MovieList.java       # Quản lý danh sách phim
+│   │   │   │   ├── Customer.java        # Model khách hàng
+│   │   │   │   ├── CustomerList.java    # Quản lý danh sách khách hàng
+│   │   │   │   ├── Room.java            # Model phòng chiếu
+│   │   │   │   ├── RoomList.java        # Quản lý danh sách phòng
+│   │   │   │   ├── Showtime.java        # Model suất chiếu
+│   │   │   │   ├── ShowtimeList.java    # Quản lý danh sách suất chiếu
+│   │   │   │   ├── Seat.java            # Model ghế ngồi
+│   │   │   │   ├── SeatList.java        # Quản lý danh sách ghế
+│   │   │   │   ├── Ticket.java          # Model vé
+│   │   │   │   └── TicketList.java      # Quản lý danh sách vé
+│   │   │   ├── database/                 # Lớp truy cập dữ liệu (DAO)
+│   │   │   │   ├── AivenConnection.java  # Quản lý kết nối database
+│   │   │   │   ├── MovieDAO.java        # DAO phim
+│   │   │   │   ├── CustomerDAO.java     # DAO khách hàng
+│   │   │   │   ├── RoomDAO.java         # DAO phòng
+│   │   │   │   ├── ShowtimeDAO.java     # DAO suất chiếu
+│   │   │   │   ├── SeatDAO.java         # DAO ghế
+│   │   │   │   └── TicketDAO.java       # DAO vé
+│   │   │   ├── Controllers/              # Spring Boot Controllers
+│   │   │   │   ├── MovieController.java      # Xử lý request phim
+│   │   │   │   ├── CustomerController.java   # Xử lý request khách hàng
+│   │   │   │   ├── RoomController.java       # Xử lý request phòng
+│   │   │   │   ├── ShowtimeController.java   # Xử lý request suất chiếu
+│   │   │   │   ├── SeatController.java       # Xử lý request ghế
+│   │   │   │   ├── TicketController.java     # Xử lý request vé
+│   │   │   │   ├── BookingController.java    # Xử lý quy trình đặt vé
+│   │   │   │   ├── LoginController.java      # Xử lý đăng nhập
+│   │   │   │   ├── RegisterController.java   # Xử lý đăng ký
+│   │   │   │   └── GlobalExceptionHandler.java # Xử lý lỗi toàn cục
+│   │   │   ├── MainMenu.java             # Menu chính ứng dụng
+│   │   │   ├── ValidationUtils.java      # Tiện ích validation
+│   │   │   └── ServingWebContentApplication.java # Main class
+│   │   └── resources/
+│   │       ├── templates/               # Thymeleaf templates
+│   │       │   ├── index.html           # Trang chủ
+│   │       │   ├── login.html           # Trang đăng nhập
+│   │       │   ├── register.html        # Trang đăng ký
+│   │       │   ├── movie/               # Templates quản lý phim
+│   │       │   │   ├── list.html        # Danh sách phim
+│   │       │   │   ├── add.html         # Thêm phim
+│   │       │   │   └── edit.html        # Sửa phim
+│   │       │   ├── customer/            # Templates quản lý khách hàng
+│   │       │   │   ├── list.html        # Danh sách khách hàng
+│   │       │   │   ├── add.html         # Thêm khách hàng
+│   │       │   │   └── edit.html        # Sửa khách hàng
+│   │       │   ├── room/                # Templates quản lý phòng
+│   │       │   │   ├── list.html        # Danh sách phòng
+│   │       │   │   ├── add.html         # Thêm phòng
+│   │       │   │   └── edit.html        # Sửa phòng
+│   │       │   ├── showtime/            # Templates quản lý suất chiếu
+│   │       │   │   ├── list.html        # Danh sách suất chiếu
+│   │       │   │   ├── add.html         # Thêm suất chiếu
+│   │       │   │   └── edit.html        # Sửa suất chiếu
+│   │       │   ├── seat/                # Templates quản lý ghế
+│   │       │   │   ├── list.html        # Danh sách ghế
+│   │       │   │   ├── add.html         # Thêm ghế
+│   │       │   │   └── edit.html        # Sửa ghế
+│   │       │   ├── ticket/              # Templates quản lý vé
+│   │       │   │   ├── list.html        # Danh sách vé
+│   │       │   │   ├── add.html         # Thêm vé
+│   │       │   │   ├── edit.html        # Sửa vé
+│   │       │   │   ├── lookup.html      # Tìm kiếm vé
+│   │       │   │   ├── lookup-result.html # Kết quả tìm kiếm
+│   │       │   │   └── print.html       # In vé
+│   │       │   └── booking/             # Templates đặt vé
+│   │       │       ├── movies.html      # Chọn phim
+│   │       │       ├── showtimes.html   # Chọn suất chiếu
+│   │       │       ├── seats.html       # Chọn ghế
+│   │       │       ├── customer.html    # Thông tin khách hàng
+│   │       │       └── success.html     # Đặt vé thành công
+│   │       └── application.properties   # Cấu hình ứng dụng
+│   └── test/
+│       └── java/com/example/servingwebcontent/
+│           └── ServingWebContentApplicationTest.java # Test class
+├── target/                              # Thư mục build
+├── pom.xml                              # Maven configuration
+├── build.gradle                         # Gradle configuration
+├── gradlew                              # Gradle wrapper script
+├── gradlew.bat                          # Gradle wrapper script (Windows)
+└── settings.gradle                      # Gradle settings
 ```
+
+### Cấu trúc thư mục chính:
+
+1. **`main/TicketBookingApp/`** - Ứng dụng Java console cơ bản
+2. **`springbootApp/complete/`** - Ứng dụng Spring Boot hoàn chỉnh
+3. **`springbootApp/initial/`** - Template Spring Boot ban đầu
 
 ---
 
