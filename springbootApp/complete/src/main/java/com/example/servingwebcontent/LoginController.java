@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
+@RequestMapping("/login")
 public class LoginController {
     
     private final CustomerDAO customerDAO;
